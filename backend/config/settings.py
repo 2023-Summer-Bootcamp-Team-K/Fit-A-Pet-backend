@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'storages',
     'django_restframework',
+    'rest_framework',
     'pet',
     'data',
     'codeNumber',
