@@ -1,17 +1,19 @@
 import json
 
 from .models import Data
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
+from .serializers import DataSerializer
 
-from django.http import HttpResponse, JsonResponse
+# from django.http import HttpResponse, JsonResponse
 
-
+@api_view(['GET'])
 def get_data(request):
     data_list = []
 
     queryset = Data.objects.all()
 
     for data in queryset:
-        # Extract the required fields from the data object
         device = data.device
         code = data.code
         timestamp = data.timestamp.isoformat()
@@ -19,6 +21,13 @@ def get_data(request):
         bloodsugar = data.bloodsugar
         scan_bloodsugar = data.scan_bloodsugar
 
+        serializer = DataSerializer(data)
+        data_list.append(serializer.data)
+
+    response_data = {'data_list': data_list}
+    return Response(response_data)
+
+"""
         # Create a dictionary for the data
         data = {
             'device': device,
@@ -35,3 +44,5 @@ def get_data(request):
     json_data = json.dumps(response_data, ensure_ascii=False, indent=4)  # Apply indentation
 
     return HttpResponse(json_data, content_type='application/json')
+    
+"""
