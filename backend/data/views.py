@@ -5,45 +5,37 @@ from django.views import View
 
 from django.http import HttpResponse, JsonResponse
 
-import csv
-
-
 class DataView(View):
     def get(self, request):
         data_list = []
 
-        with open('/Users/azurespring/projects/Fit-A-Pet-backend/backend/data/csv/SoobinJung_glucose_2023-6-9 (1).csv') as bloodsugar_csv:
-            reader = csv.reader(bloodsugar_csv)
+        # Assuming you have set up the MySQL database connection properly
 
-            for i, row in enumerate(reader):
-                if i >= 3:
-                    device = row[0]
-                    code = row[1]
-                    timestamp = row[2]
-                    record_type = int(row[3])
-                    bloodsugar = int(row[4]) if row[4] else None
-                    scan_bloodsugar = int(row[5]) if row[5] else None
+        # Fetch data from the MySQL database
+        queryset = Data.objects.all()
 
-                    Data.objects.create(
-                        device=device,
-                        code=code,
-                        timestamp=timestamp,
-                        record_type=record_type,
-                        bloodsugar=bloodsugar,
-                        scan_bloodsugar=scan_bloodsugar
-                    )
+        for data in queryset:
+            # Extract the required fields from the data object
+            device = data.device
+            code = data.code
+            timestamp = data.timestamp.isoformat()
+            record_type = data.record_type
+            bloodsugar = data.bloodsugar
+            scan_bloodsugar = data.scan_bloodsugar
 
-                    data = {
-                        'device': device,
-                        'code': code,
-                        'timestamp': timestamp,
-                        'record_type': record_type,
-                        'bloodsugar': bloodsugar,
-                        'scan_bloodsugar': scan_bloodsugar
-                    }
-                    data_list.append(data)
+            # Create a dictionary for the data
+            data = {
+                'device': device,
+                'code': code,
+                'timestamp': timestamp,
+                'record_type': record_type,
+                'bloodsugar': bloodsugar,
+                'scan_bloodsugar': scan_bloodsugar
+            }
+
+            data_list.append(data)
 
         response_data = {'data list': data_list}
-        json_data = json.dumps(response_data, ensure_ascii=False, indent=4)  # 들여쓰기 적용
+        json_data = json.dumps(response_data, ensure_ascii=False, indent=4)  # Apply indentation
 
         return HttpResponse(json_data, content_type='application/json')
