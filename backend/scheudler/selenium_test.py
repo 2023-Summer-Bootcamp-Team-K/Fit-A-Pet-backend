@@ -1,6 +1,7 @@
 import time
 import os
 
+from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
@@ -67,7 +68,37 @@ time.sleep(100)
 # 확인 및 로그인 버튼 클릭
 next_button = driver.find_element(By.ID, 'twoFactor-step2-next-button')
 next_button.click()
-
 time.sleep(10)
+
+# 이름 선택하고 이름 입력
+first_name_button = driver.find_element(By.ID, 'table-header-search-button-firstName')
+first_name_button.click()
+first_name_input = driver.find_element(By.ID, 'table-header-search-input-firstName')
+first_name_input.send_keys("이름")
+
+# 성 선택하고 성 입력
+last_name_button = driver.find_element(By.ID, 'table-header-search-button-lastName')
+last_name_button.click()
+last_name_input = driver.find_element(By.ID, 'table-header-search-input-lastName')
+last_name_input.send_keys("성")
+
+# 제일 앞에있는 요소 더블 클릭
+row_element = driver.find_element(By.CLASS_NAME, 'row____3GNff')
+actions = ActionChains(driver)
+actions.click(row_element).perform()
+
+profile_button = driver.find_element(By.ID, 'profile-nav-button-container')
+profile_button.click()
+
+download_button = driver.find_element(By.ID, 'patient-profile-data-button')
+download_button.click()
+
+checkbox = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, 'rc-anchor-container')))
+
+check_actions = ActionChains(driver)
+check_actions.move_to_element(checkbox).click().perform()
+
+downloaded_button = driver.find_element(By.ID, 'exportData-modal-download-button')
+downloaded_button.click()
 
 driver.quit()
