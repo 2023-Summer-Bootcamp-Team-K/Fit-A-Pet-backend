@@ -21,16 +21,16 @@ class DataView(View):
                     code = row[1]
                     timestamp = row[2]
                     record_type = int(row[3])
-                    prev_bloodsugar = int(row[4])
-                    cur_bloodsugar = int(row[5])
+                    bloodsugar = int(row[4]) if row[4] else None
+                    scan_bloodsugar = int(row[5]) if row[5] else None
 
                     Data.objects.create(
                         device=device,
                         code=code,
                         timestamp=timestamp,
                         record_type=record_type,
-                        prev_bloodsugar=prev_bloodsugar,
-                        cur_bloodsugar=cur_bloodsugar
+                        bloodsugar=bloodsugar,
+                        scan_bloodsugar=scan_bloodsugar
                     )
 
                     data = {
@@ -38,8 +38,8 @@ class DataView(View):
                         'code': code,
                         'timestamp': timestamp,
                         'record_type': record_type,
-                        'prev_bloodsugar': prev_bloodsugar,
-                        'cur_bloodsugar': cur_bloodsugar
+                        'bloodsugar': bloodsugar,
+                        'scan_bloodsugar': scan_bloodsugar
                     }
                     data_list.append(data)
 
