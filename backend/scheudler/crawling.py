@@ -18,6 +18,7 @@ def import_csv_to_db(csv_file_path):
     with open(csv_file_path, 'r', newline='', encoding='utf-8') as file:
         csv_reader = csv.DictReader(file)
         next(csv_reader)
+        next(csv_reader)
 
         for row in csv_reader:
             data = Data()
