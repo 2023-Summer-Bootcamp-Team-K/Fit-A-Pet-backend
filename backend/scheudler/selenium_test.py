@@ -1,5 +1,7 @@
+import csv
 import time
 import os
+from datetime import datetime
 
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
@@ -10,11 +12,30 @@ from selenium.webdriver.support.ui import Select
 from selenium import webdriver
 
 from dotenv import load_dotenv
+
+from data.models import Data
+
 load_dotenv()
+
+
+def import_csv_to_db(csv_file_path):
+    with open(csv_file_path, 'r', newline='', encoding='utf-8') as file:
+        csv_reader = csv.DictReader(file)
+        next(csv_reader)
+
+        for row in csv_reader:
+            data = Data()
+            data.device = row['장치']
+            data.code = row['일련 번호']
+            data.timestamp = datetime.strptime(row['장치 타임 스탬프'], '%Y-%m-%d %H:%M')
+            data.record_type = int(row['기록 유형'])
+            data.prev_bloodsugar = int(row['과거 혈당'])
+            data.cur_bloodsugar = int(row['혈당 스캔'])
+
+            data.save()
 
 driver = webdriver.Chrome()  # 크롬 드라이버 경로를 지정해주세요
 time.sleep(3)
-
 
 # 웹 페이지로 이동
 driver.get('https://www.libreview.com/')
@@ -100,5 +121,9 @@ check_actions.move_to_element(checkbox).click().perform()
 
 downloaded_button = driver.find_element(By.ID, 'exportData-modal-download-button')
 downloaded_button.click()
+
+csv_file_path = "CSV파일 경로"
+
+import_csv_to_db(csv_file_path)
 
 driver.quit()
