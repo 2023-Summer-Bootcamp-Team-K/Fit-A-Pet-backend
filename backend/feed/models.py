@@ -6,6 +6,8 @@ from pet.models import Pet
 # Create your models here.
 class Meat(models.Model):
     name = models.CharField(max_length=32)
+    description = models.CharField(max_length=100, null=True)
+    image_url = models.URLField(max_length=500, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_deleted = models.BooleanField(default=False)
@@ -16,6 +18,8 @@ class Meat(models.Model):
 
 class Oil(models.Model):
     name = models.CharField(max_length=32)
+    description = models.CharField(max_length=100, null=True)
+    image_url = models.URLField(max_length=500, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_deleted = models.BooleanField(default=False)
@@ -26,6 +30,8 @@ class Oil(models.Model):
 
 class Supplement(models.Model):
     name = models.CharField(max_length=32)
+    description = models.CharField(max_length=100, null=True)
+    image_url = models.URLField(max_length=500, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_deleted = models.BooleanField(default=False)
