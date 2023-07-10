@@ -16,6 +16,8 @@ class Pet(models.Model):
     gender = models.CharField(max_length=20, choices=GENDER_CHOICES, default='unspayed female')
     weight = models.FloatField()
     started_date = models.DateTimeField()
+    feed = models.CharField(max_length=32, blank=True)
+    sore_spot = models.CharField(max_length=10, blank=True)
     profile_url = models.ImageField(upload_to='fitapet/', blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
