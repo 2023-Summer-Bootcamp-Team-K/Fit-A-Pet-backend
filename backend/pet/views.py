@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
+from .models import Pet
 from .serializers import PetSerializer
 
 class PetCreateAPIView(APIView):
@@ -35,5 +36,21 @@ class PetCreateAPIView(APIView):
                 'message': '필수 값이 누락되었습니다',
             }
             return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PetModifyView(APIView):
+    def patch(self, request, pet_id):
+        try:
+            pet = Pet.objects.get(id=pet_id)
+        except Pet.DoesNotExist:
+            return Response({"message": "Pet not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = PetSerializer(pet, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
