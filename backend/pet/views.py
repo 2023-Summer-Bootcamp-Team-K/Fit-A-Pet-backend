@@ -15,6 +15,7 @@ class PetCreateAPIView(APIView):
                 'is_success': True,
                 'message': '반려동물 정보가 성공적으로 등록되었습니다',
                 'result': {
+                    'user': pet.user,
                     'name': pet.name,
                     'age': pet.age,
                     'species': pet.species,
@@ -27,10 +28,12 @@ class PetCreateAPIView(APIView):
                 }
             }
             return Response(response_data, status=status.HTTP_201_CREATED)
-        # else:
-        #     response_data = {
-        #         'code': status.HTTP_400_BAD_REQUEST,
-        #         'is_success': False,
-        #         'message': '필수 값이 누락되었습니다',
-        #     }
-        #     return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            response_data = {
+                'code': status.HTTP_400_BAD_REQUEST,
+                'is_success': False,
+                'message': '필수 값이 누락되었습니다',
+            }
+            return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
+
+
