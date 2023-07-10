@@ -16,6 +16,8 @@ class Pet(models.Model):
     gender = models.CharField(max_length=20, choices=GENDER_CHOICES, default='unspayed female')
     weight = models.FloatField()
     started_date = models.DateTimeField()
+    feed = models.CharField(max_length=32, blank=True)
+    sore_spot = models.CharField(max_length=10, blank=True)
     profile_url = models.ImageField(upload_to='fitapet/', blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -23,43 +25,3 @@ class Pet(models.Model):
 
     class Meta:
         db_table = 'pet'
-
-
-class Meat(models.Model):
-    name = models.CharField(max_length=32)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    is_deleted = models.BooleanField(default=False)
-
-    class Meta:
-        db_table = 'meat'
-
-
-class Oil(models.Model):
-    name = models.CharField(max_length=32)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    is_deleted = models.BooleanField(default=False)
-
-    class Meta:
-        db_table = 'oil'
-
-
-class Supplement(models.Model):
-    name = models.CharField(max_length=32)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    is_deleted = models.BooleanField(default=False)
-
-    class Meta:
-        db_table = 'supplement'
-
-
-class MixedFeed(models.Model):
-    meat = models.ForeignKey(Meat, on_delete=models.CASCADE)
-    oil = models.ForeignKey(Oil, on_delete=models.CASCADE)
-    supplement = models.ForeignKey(Supplement, on_delete=models.CASCADE)
-    pet = models.ForeignKey(Pet, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    is_deleted = models.BooleanField(default=False)
