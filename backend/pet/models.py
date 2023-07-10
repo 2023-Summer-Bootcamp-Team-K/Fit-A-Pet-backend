@@ -54,3 +54,12 @@ class Supplement(models.Model):
     class Meta:
         db_table = 'supplement'
 
+
+class MixedFeed(models.Model):
+    meat = models.ForeignKey(Meat, on_delete=models.CASCADE)
+    oil = models.ForeignKey(Oil, on_delete=models.CASCADE)
+    supplement = models.ForeignKey(Supplement, on_delete=models.CASCADE)
+    pet = models.ForeignKey(Pet, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_deleted = models.BooleanField(default=False)
