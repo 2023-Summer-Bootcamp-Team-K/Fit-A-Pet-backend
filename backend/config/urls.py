@@ -16,7 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from feed.views import PetDetailsAPIView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('pets/feed/<int:pk>/', PetDetailsAPIView.as_view(), name='pet-details'),
 ]
