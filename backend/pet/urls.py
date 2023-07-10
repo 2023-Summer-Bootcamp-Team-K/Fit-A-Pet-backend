@@ -1,6 +1,5 @@
 from django.urls import path
-from .views import PetCreateAPIView
-from .views import PetModifyView
+from .views import PetCreateView, PetModifyView, PetDeleteView
 
 app_name = 'pet'
 
