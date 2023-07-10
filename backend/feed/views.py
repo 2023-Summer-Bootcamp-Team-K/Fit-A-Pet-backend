@@ -46,13 +46,17 @@ class PetDetailsAPIView(APIView):
         else:
             selected_sup = None
 
+        meat_serializer = MeatSerializer(Meat.objects.get(name=selected_meat))
+        oil_serializer = OilSerializer(Oil.objects.get(name=selected_oil))
+        sup_serializer = SupplementSerializer(Supplement.objects.get(name=selected_sup))
+
         data = {
             "code": 200,
             "message": "추천된 사료 조합입니다.",
             "result": {
-                "meat": selected_meat,
-                "oil": selected_oil,
-                "supplement": selected_sup
+                "meat": meat_serializer.data if selected_meat else None,
+                "oil": oil_serializer.data if selected_oil else None,
+                "supplement": sup_serializer.data if selected_sup else None
             }
         }
 
