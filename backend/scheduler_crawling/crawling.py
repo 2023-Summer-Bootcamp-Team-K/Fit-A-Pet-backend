@@ -26,8 +26,8 @@ def import_csv_to_db(csv_file_path):
             data.code = row['일련 번호']
             data.timestamp = datetime.strptime(row['장치 타임 스탬프'], '%Y-%m-%d %H:%M')
             data.record_type = int(row['기록 유형'])
-            data.prev_bloodsugar = int(row['과거 혈당'])
-            data.cur_bloodsugar = int(row['혈당 스캔'])
+            data.prev_bloodsugar = int(row['과거 혈당 mg/dL'])
+            data.cur_bloodsugar = int(row['혈당 스캔 mg/dL'])
 
             data.save()
 
