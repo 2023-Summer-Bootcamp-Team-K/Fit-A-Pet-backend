@@ -5,7 +5,7 @@ from rest_framework import status
 from .models import Pet
 from .serializers import PetSerializer
 
-class PetCreateAPIView(APIView):
+class PetCreateView(APIView):
     def post(self, request):
         serializer = PetSerializer(data=request.data)
         if serializer.is_valid():
@@ -53,4 +53,12 @@ class PetModifyView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class PetDeleteView(APIView):
+    def delete(self, request, pet_id):
+        try:
+            pet = Pet.objects.get(id=pet_id)
+        except Pet.DoesNotExist:
+            return Response({"message": "Pet not found"}, status=status.HTTP_404_NOT_FOUND)
 
+        pet.delete()
+        return Response({"message": "Successfully deleted"}, status=status.HTTP_204_NO_CONTENT)
