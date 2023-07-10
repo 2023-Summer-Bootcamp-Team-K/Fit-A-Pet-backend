@@ -13,13 +13,44 @@ class Pet(models.Model):
     name = models.CharField(max_length=10)
     age = models.IntegerField()
     species = models.CharField(max_length=20)
-    gender = models.CharField(max_length=20, choices=GENDER_CHOICES)
+    gender = models.CharField(max_length=20, choices=GENDER_CHOICES, default='unspayed female')
     weight = models.FloatField()
     started_date = models.DateTimeField()
-    profile_url = models.ImageField(upload_to='fitapet/')
+    profile_url = models.ImageField(upload_to='fitapet/', blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_deleted = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'pet'
+
+
+class Meat(models.Model):
+    name = models.CharField(max_length=32)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_deleted = models.BooleanField(default=False)
+
+    class Meta:
+        db_table = 'meat'
+
+
+class Oil(models.Model):
+    name = models.CharField(max_length=32)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_deleted = models.BooleanField(default=False)
+
+    class Meta:
+        db_table = 'oil'
+
+
+class Supplement(models.Model):
+    name = models.CharField(max_length=32)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_deleted = models.BooleanField(default=False)
+
+    class Meta:
+        db_table = 'supplement'
+
