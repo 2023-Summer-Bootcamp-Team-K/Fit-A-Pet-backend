@@ -10,13 +10,16 @@ class Pet(models.Model):
         ('neutered male', 'Neutered Male'),
     )
 
+    #user = models.ForeignKey(User)
     name = models.CharField(max_length=10)
     age = models.IntegerField()
     species = models.CharField(max_length=20)
-    gender = models.CharField(max_length=20, choices=GENDER_CHOICES, default='unspated female')
+    gender = models.CharField(max_length=20, choices=GENDER_CHOICES, default='unspayed female')
     weight = models.FloatField()
     started_date = models.DateTimeField()
-    profile_url = models.ImageField(upload_to='fitapet/', blank=True)
+    feed = models.CharField(max_length=32, blank=True)
+    sore_spot = models.CharField(max_length=10, blank=True)
+    profile_url = models.URLField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_deleted = models.BooleanField(default=False)

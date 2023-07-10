@@ -1,10 +1,8 @@
 from django.urls import path
-
-from . import views
+from .views import PetCreateAPIView
 
 app_name = 'pet'
 
 urlpatterns = [
-    path('', views.index, name='index'),
-    path('create/', views.pet_create, name='pet_create'),
+    path('create/', PetCreateAPIView.as_view(), name='pet_create'),
 ]
