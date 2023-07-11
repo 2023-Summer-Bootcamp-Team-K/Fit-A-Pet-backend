@@ -16,6 +16,7 @@ class PetCreateView(APIView):
                 'is_success': True,
                 'message': '반려동물 정보가 성공적으로 등록되었습니다',
                 'result': {
+                    'id': pet.id,
                     'user': pet.user_id,
                     'name': pet.name,
                     'age': pet.age,
