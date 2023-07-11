@@ -12,12 +12,11 @@ scheduler = BackgroundScheduler()
 
 
 @api_view(['POST'])
-def start_scheduler(request):
-    user_id = request.data.get('user_id')
+def start_scheduler(request, user_id):
 
     try:
         user = User.objects.get(pk=user_id)
-        scheduler.add_job(run_libreView_process, 'date', args=[user])
+        scheduler.add_job(run_libreView_process, 'date', args=[user.id])
         scheduler.start()
 
         return Response({'message': '스케줄러가 성공적으로 실행되었습니다.'})
