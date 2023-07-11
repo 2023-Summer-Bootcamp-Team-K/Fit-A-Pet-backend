@@ -5,6 +5,7 @@ from datetime import datetime
 
 from django.contrib.auth.models import User
 from selenium.webdriver import ActionChains
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
@@ -38,8 +39,10 @@ def run_libreView_process(user_id):
     first_name = user.first_name
     last_name = user.last_name
 
+    chrome_options = Options()
+    chrome_options.add_argument('--headless')
     # Selenium 웹 드라이버 설정
-    driver = webdriver.Chrome()  # 크롬 드라이버 경로를 지정해주세요
+    driver = webdriver.Chrome(options=chrome_options)  # 크롬 드라이버 경로를 지정해주세요
     time.sleep(3)
 
 
