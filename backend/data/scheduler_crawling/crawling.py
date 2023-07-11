@@ -3,6 +3,7 @@ import time
 import os
 from datetime import datetime
 
+from django.contrib.auth.models import User
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -31,7 +32,12 @@ def import_csv_to_db(csv_file_path):
 
             data.save()
 
-def run_libreView_process():
+def run_libreView_process(user_id):
+
+    user = User.objects.get(pk=user_id)
+    first_name = user.first_name
+    last_name = user.last_name
+
     # Selenium 웹 드라이버 설정
     driver = webdriver.Chrome()  # 크롬 드라이버 경로를 지정해주세요
     time.sleep(3)
@@ -91,13 +97,15 @@ def run_libreView_process():
     first_name_button = driver.find_element(By.ID, 'table-header-search-button-firstName')
     first_name_button.click()
     first_name_input = driver.find_element(By.ID, 'table-header-search-input-firstName')
-    first_name_input.send_keys("이름")
+    first_name_input.clear()
+    first_name_input.send_keys(first_name)
 
     # 성 선택하고 성 입력
     last_name_button = driver.find_element(By.ID, 'table-header-search-button-lastName')
     last_name_button.click()
     last_name_input = driver.find_element(By.ID, 'table-header-search-input-lastName')
-    last_name_input.send_keys("성")
+    last_name_input.clear()
+    last_name_input.send_keys(last_name)
 
     # 제일 앞에있는 요소 더블 클릭
     row_element = driver.find_element(By.CLASS_NAME, 'row____3GNff')
