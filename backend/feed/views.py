@@ -25,9 +25,9 @@ class PetDetailsAPIView(APIView):
             selected_meat = None
 
         # Selected Oil
-        if pet.age < 1:
+        if pet.age <= 1:
             selected_oil = '20ml 오일스틱'
-        elif 1 <= pet.age < 7:
+        elif 1 < pet.age <= 7:
             selected_oil = '30ml 오일스틱'
         else:
             selected_oil = '10ml 오일스틱'
