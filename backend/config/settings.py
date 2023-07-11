@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'storages',
     'django_restframework',
     'rest_framework',
+    'drf_yasg',
     'pet',
     'data',
     'codeNumber',
