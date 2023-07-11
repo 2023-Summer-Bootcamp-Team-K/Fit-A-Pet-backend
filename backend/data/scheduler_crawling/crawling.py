@@ -16,7 +16,9 @@ from selenium import webdriver
 from data.models import Data
 
 
-def import_csv_to_db(csv_file_path):
+def import_csv_to_db(file_name):
+    current_directory = os.getcwd()
+    csv_file_path = os.path.join(current_directory, file_name)
     with open(csv_file_path, 'r', newline='', encoding='utf-8') as file:
         csv_reader = csv.DictReader(file)
         next(csv_reader)
@@ -40,9 +42,11 @@ def run_libreView_process(user_id):
     last_name = user.last_name
 
     chrome_options = Options()
-    chrome_options.add_argument('--headless')
-    # Selenium 웹 드라이버 설정
-    driver = webdriver.Chrome(options=chrome_options)  # 크롬 드라이버 경로를 지정해주세요
+    # chrome_options.add_argument('--headless')
+    chrome_options.add_argument('--disk-cache-dir=./') # 다운로드 경로 설정
+    # # Selenium 웹 드라이버 설정
+    # driver = webdriver.Chrome(options=chrome_options)  # 크롬 드라이버 경로를 지정해주세요
+    driver = webdriver.Chrome()
     time.sleep(3)
 
 
@@ -83,18 +87,21 @@ def run_libreView_process(user_id):
     login_button = driver.find_element(By.ID, 'loginForm-submit-button')
     login_button.click()
 
+    time.sleep(10)
+
     code_send_button = driver.find_element(By.ID, 'twoFactor-step1-next-button')
     code_send_button.click()
+    time.sleep(15)
 
-    # 인증코르 입력
-    code_input = driver.find_element(By.ID, 'twoFactor-step2-code-input')
-    code_input.send_keys('인증 키')
-    time.sleep(100)
-
-    # 확인 및 로그인 버튼 클릭
-    next_button = driver.find_element(By.ID, 'twoFactor-step2-next-button')
-    next_button.click()
-    time.sleep(10)
+    # # 인증코드 입력
+    # code_input = driver.find_element(By.ID, 'twoFactor-step2-code-input')
+    # code_input.send_keys('인증 키')
+    # time.sleep(1000)
+    #
+    # # 확인 및 로그인 버튼 클릭
+    # next_button = driver.find_element(By.ID, 'twoFactor-step2-next-button')
+    # next_button.click()
+    # time.sleep(15)
 
     # 이름 선택하고 이름 입력
     first_name_button = driver.find_element(By.ID, 'table-header-search-button-firstName')
@@ -102,6 +109,7 @@ def run_libreView_process(user_id):
     first_name_input = driver.find_element(By.ID, 'table-header-search-input-firstName')
     first_name_input.clear()
     first_name_input.send_keys(first_name)
+    time.sleep(15)
 
     # 성 선택하고 성 입력
     last_name_button = driver.find_element(By.ID, 'table-header-search-button-lastName')
@@ -109,28 +117,35 @@ def run_libreView_process(user_id):
     last_name_input = driver.find_element(By.ID, 'table-header-search-input-lastName')
     last_name_input.clear()
     last_name_input.send_keys(last_name)
+    time.sleep(15)
 
     # 제일 앞에있는 요소 더블 클릭
     row_element = driver.find_element(By.CLASS_NAME, 'row____3GNff')
     actions = ActionChains(driver)
     actions.click(row_element).perform()
+    time.sleep(15)
 
     profile_button = driver.find_element(By.ID, 'profile-nav-button-container')
     profile_button.click()
+    time.sleep(15)
 
     download_button = driver.find_element(By.ID, 'patient-profile-data-button')
     download_button.click()
+    time.sleep(15)
 
     checkbox = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, 'rc-anchor-container')))
+    time.sleep(15)
 
     check_actions = ActionChains(driver)
     check_actions.move_to_element(checkbox).click().perform()
+    time.sleep(15)
 
     downloaded_button = driver.find_element(By.ID, 'exportData-modal-download-button')
     downloaded_button.click()
+    time.sleep(15)
 
-    csv_file_path = "CSV파일 경로"
+    file_name = f"{user.first_name}{user.last_name}_glucose_{datetime.now().strftime('%Y-%m-%d')}.csv"
 
-    import_csv_to_db(csv_file_path)
+    import_csv_to_db(file_name)
 
     driver.quit()
