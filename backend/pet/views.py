@@ -63,3 +63,14 @@ class PetDeleteView(APIView):
 
         pet.delete()
         return Response({"message": "Successfully deleted"}, status=status.HTTP_204_NO_CONTENT)
+
+
+class PetDetailView(APIView):
+    def get(self, request, pet_id):
+        try:
+            pet = Pet.objects.get(id=int(pet_id))
+        except Pet.DoesNotExist:
+            return Response({"message":"반려동물을 찾을 수 없습니다."}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = PetSerializer(pet)
+        return Response(serializer.data, status=status.HTTP_200_OK)
