@@ -5,7 +5,7 @@ from .serializers import MeatSerializer, OilSerializer, SupplementSerializer
 from .models import Pet
 
 
-class PetDetailsAPIView(APIView):
+class FeedRecommendAPIView(APIView):
     def get(self, request, pk):
         try:
             pet = Pet.objects.get(pk=pk)
