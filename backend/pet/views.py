@@ -1,15 +1,31 @@
+import boto3
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, parsers
 
+from config.settings import AWS_STORAGE_BUCKET_NAME
 from .models import Pet
 from .serializers import PetSerializer
 
+
+s3_client = boto3.client('s3')
+
 class PetCreateView(APIView):
+    parser_classes = [parsers.MultiPartParser, parsers.FormParser]
+
     def post(self, request):
         serializer = PetSerializer(data=request.data)
         if serializer.is_valid():
             pet = serializer.save()
+            if 'profile_image' in request.FILES:
+                image = request.FILES['profile_image']
+
+
+                s3_file_path = f"fitapet/{image.name}"
+
+                pet.profile_url = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.ap-northeast-2.amazonaws.com/{s3_file_path}"
+                pet.save()
+
 
             response_data = {
                 'code': status.HTTP_201_CREATED,
