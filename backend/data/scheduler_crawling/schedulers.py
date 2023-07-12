@@ -5,6 +5,6 @@ from crawling import run_libreView_process
 scheduler = BlockingScheduler()
 
 # 스케줄링 설정
-scheduler.add_job(run_libreView_process, 'interval', hours=8)
+scheduler.add_job(run_libreView_process)
 
 scheduler.start()

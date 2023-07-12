@@ -4,7 +4,6 @@ import os
 from datetime import datetime
 
 from django.contrib.auth.models import User
-from selenium.webdriver import ActionChains
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -42,10 +41,10 @@ def run_libreView_process(user_id):
     last_name = user.last_name
 
     chrome_options = Options()
-    # chrome_options.add_argument('--headless')
+    chrome_options.add_argument('--headless')
     chrome_options.add_argument('--disk-cache-dir=./') # 다운로드 경로 설정
-    # # Selenium 웹 드라이버 설정
-    # driver = webdriver.Chrome(options=chrome_options)  # 크롬 드라이버 경로를 지정해주세요
+    # Selenium 웹 드라이버 설정
+    driver = webdriver.Chrome(options=chrome_options)  # 크롬 드라이버 경로를 지정해주세요
     driver = webdriver.Chrome()
     time.sleep(3)
 
