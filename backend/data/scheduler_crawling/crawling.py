@@ -106,30 +106,28 @@ def run_libreView_process(user_id):
     # 이름 선택하고 이름 입력
     first_name_button = driver.find_element(By.ID, 'table-header-search-button-firstName')
     first_name_button.click()
+
     first_name_input = driver.find_element(By.ID, 'table-header-search-input-firstName')
-    first_name_input.clear()
     first_name_input.send_keys(first_name)
-    time.sleep(15)
+    time.sleep(5)
 
     # 성 선택하고 성 입력
     last_name_button = driver.find_element(By.ID, 'table-header-search-button-lastName')
     last_name_button.click()
-    last_name_input = driver.find_element(By.ID, 'table-header-search-input-lastName')
-    last_name_input.clear()
-    last_name_input.send_keys(last_name)
-    time.sleep(15)
+    time.sleep(5)
 
-    # 제일 앞에있는 요소 더블 클릭
-    row_element = driver.find_element(By.CLASS_NAME, 'row____3GNff')
-    actions = ActionChains(driver)
-    actions.click(row_element).perform()
-    time.sleep(15)
+    last_name_input = driver.find_element(By.ID, 'table-header-search-input-lastName')
+    last_name_input.send_keys(last_name)
+    time.sleep(5)
+
+    row_element = driver.find_element(By.ID, "9ae61ff0-f67d-11ed-ba5b-0242ac110009-table-cell-row")
+    row_element.click()
 
     profile_button = driver.find_element(By.ID, 'profile-nav-button-container')
     profile_button.click()
     time.sleep(15)
 
-    download_button = driver.find_element(By.ID, 'patient-profile-data-button')
+    download_button = driver.find_element(By.ID, 'patient-profile-data-download-button')
     download_button.click()
     time.sleep(15)
 
