@@ -131,12 +131,8 @@ def run_libreView_process(user_id):
     download_button.click()
     time.sleep(15)
 
-    checkbox = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, 'rc-anchor-container')))
-    time.sleep(15)
-
-    check_actions = ActionChains(driver)
-    check_actions.move_to_element(checkbox).click().perform()
-    time.sleep(15)
+    checkbox = driver.find_element(By.ID, 'recaptcha-anchor')
+    checkbox.click()
 
     downloaded_button = driver.find_element(By.ID, 'exportData-modal-download-button')
     downloaded_button.click()
