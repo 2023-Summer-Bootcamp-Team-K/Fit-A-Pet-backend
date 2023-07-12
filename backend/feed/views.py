@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import Meat, Oil, Supplement
+from .models import Meat, Oil, Supplement, MixedFeed
 from .serializers import MeatSerializer, OilSerializer, SupplementSerializer
 from .models import Pet
 
@@ -45,6 +45,12 @@ class FeedRecommendAPIView(APIView):
             selected_sup = '소화 보조식품'
         else:
             selected_sup = None
+
+        meat = Meat.objects.get(name=selected_meat)
+        oil = Oil.objects.get(name=selected_oil)
+        supplement = Supplement.objects.get(name=selected_sup)
+
+        mixed_feed = MixedFeed.objects.create(meat=meat, oil=oil, supplement=supplement, pet=pet)
 
         meat_serializer = MeatSerializer(Meat.objects.get(name=selected_meat))
         oil_serializer = OilSerializer(Oil.objects.get(name=selected_oil))
