@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'storages',
     'django_restframework',
+    'rest_framework',
     'pet',
     'data',
     'codeNumber',
@@ -155,3 +156,8 @@ AWS_S3_OBJECT_PARAMETERS = {
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = "https://%s/static/" % AWS_S3_CUSTOM_DOMAIN
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+FILE_UPLOAD_HANDLERS = [
+    'django.core.files.uploadhandler.MemoryFileUploadHandler',
+    'django.core.files.uploadhandler.TemporaryFileUploadHandler',
+]
