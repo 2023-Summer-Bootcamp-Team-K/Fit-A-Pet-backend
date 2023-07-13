@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'pet',
     'data',
     'codeNumber',
+    'feed',
 ]
 
 MIDDLEWARE = [
