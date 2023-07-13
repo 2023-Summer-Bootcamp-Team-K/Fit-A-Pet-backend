@@ -14,7 +14,7 @@ services:
       - 8000:8000
     volumes:
       - ./backend/:/backend/
-      - ./backend/static/:/backend/static/
+      - static_volume:/backend/static/
     networks:
       - app-tier
     expose:
@@ -43,3 +43,6 @@ services:
 networks:
   app-tier:
     driver: bridge
+
+volumes:
+  static_volume:
