@@ -2,6 +2,9 @@ import boto3
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, parsers
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+from django.db import transaction
 
 from config.settings import AWS_STORAGE_BUCKET_NAME
 from .models import Pet
@@ -13,6 +16,8 @@ s3_client = boto3.client('s3')
 class PetCreateView(APIView):
     parser_classes = [parsers.MultiPartParser, parsers.FormParser]
 
+    @swagger_auto_schema(request_body=PetSerializer)
+    @transaction.atomic
     def post(self, request):
         serializer = PetSerializer(data=request.data)
         if serializer.is_valid():
@@ -57,6 +62,8 @@ class PetCreateView(APIView):
 class PetModifyView(APIView):
     parser_classes = [parsers.MultiPartParser, parsers.FormParser]
 
+    @swagger_auto_schema(request_body=PetSerializer)
+    @transaction.atomic
     def patch(self, request, pet_id):
         try:
             pet = Pet.objects.get(id=pet_id)
@@ -108,6 +115,8 @@ class PetModifyView(APIView):
 
 
 class PetDeleteView(APIView):
+    @swagger_auto_schema(request_body=PetSerializer)
+    @transaction.atomic
     def delete(self, request, pet_id):
         try:
             pet = Pet.objects.get(id=pet_id)
@@ -119,6 +128,8 @@ class PetDeleteView(APIView):
 
 
 class PetDetailView(APIView):
+    @swagger_auto_schema(request_body=PetSerializer)
+    @transaction.atomic
     def get(self, request, pet_id):
         try:
             pet = Pet.objects.get(id=int(pet_id))
