@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='pet',
             name='gender',
-            field=models.CharField(choices=[('unspayed female', 'Unspayed Female'), ('spayed female', 'Spayed Female'), ('unneutered male', 'Unneutered Male'), ('neutered male', 'Neutered Male')], default='unspayed female', max_length=20),
+            field=models.CharField(choices=[('unspayed female', 'Unspayed Female'), ('spayed female', 'Spayed Female'), ('unneutered male', 'Unneutered Male'), ('neutered male', 'Neutered Male')], default='unspated female', max_length=20),
         ),
         migrations.AddField(
             model_name='pet',
