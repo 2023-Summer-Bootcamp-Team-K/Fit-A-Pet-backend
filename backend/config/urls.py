@@ -24,5 +24,7 @@ urlpatterns = [
 
     # django
     path('admin/', admin.site.urls),
+    path('api/feeds/', include('feed.urls')),
+    path('api/pets/', include('pet.urls')),
     path('api/data/', include('data.urls')),
 ]
