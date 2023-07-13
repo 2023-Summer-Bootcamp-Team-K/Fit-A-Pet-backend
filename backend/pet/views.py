@@ -115,7 +115,7 @@ class PetModifyView(APIView):
 
 
 class PetDeleteView(APIView):
-    @swagger_auto_schema(request_body=PetSerializer)
+    @swagger_auto_schema()
     @transaction.atomic
     def delete(self, request, pet_id):
         try:
@@ -128,7 +128,7 @@ class PetDeleteView(APIView):
 
 
 class PetDetailView(APIView):
-    @swagger_auto_schema(request_body=PetSerializer)
+    @swagger_auto_schema()
     @transaction.atomic
     def get(self, request, pet_id):
         try:
