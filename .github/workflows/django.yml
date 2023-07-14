@@ -29,4 +29,4 @@ jobs:
       env:
         DB_NAME: ${{ secrets.MODIFIED_DOTENV }}
       run: |
-        python3 backend/manage.py test --settings=config.settings.local
+        python3 backend/manage.py test 
