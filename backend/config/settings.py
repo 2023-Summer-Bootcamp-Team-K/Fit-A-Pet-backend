@@ -155,7 +155,7 @@ AWS_S3_OBJECT_PARAMETERS = {
 }
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'backend', 'static')
 
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 FILE_UPLOAD_HANDLERS = [
