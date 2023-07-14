@@ -26,7 +26,8 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r backend/requirements.txt
     - name: Print environment variable
-      run: echo ${{ secrets.MODIFIED_DOTENV }}
+      env:
+          SECRET_KEY: ${{secrets.MODIFIED_DOTENV}}
     - name: Run Tests
       run: |
         cd backend
