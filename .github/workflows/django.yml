@@ -27,4 +27,5 @@ jobs:
         pip install -r backend/requirements.txt
     - name: Run Tests
       run: |
+        cd Fit-A-Pet-backend/backend
         python manage.py test
