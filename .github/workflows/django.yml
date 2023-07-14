@@ -30,9 +30,8 @@ jobs:
         pip install python-dotenv
         python -c "import dotenv; dotenv.load_dotenv()"
     - name: Print Environment Variable
-      run: echo ${{ secrets.MODIFIED_DOTENV }}
+      run: echo $MODIFIED_DOTENV
     - name: Run Tests
       run: |
         cd backend
         python manage.py test
-        
