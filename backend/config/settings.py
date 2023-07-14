@@ -83,6 +83,8 @@ WSGI_APPLICATION = 'config.wsgi.application'
 import pymysql
 import dotenv
 
+from dotenv import load_dotenv
+
 dotenv.load_dotenv()
 
 pymysql.install_as_MySQLdb()
