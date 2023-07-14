@@ -26,5 +26,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r backend/requirements.txt
     - name: Run Tests
+      env:
+        DB_NAME: ${{ secrets.MODIFIED_DOTENV }}
       run: |
-        python3 backend/manage.py test
+        python3 backend/manage.py test --settings=config.settings.local
