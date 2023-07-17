@@ -25,8 +25,10 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r backend/requirements.txt
+    - name: create env file
+      run: |
+        touch .env
+        echo "${{ secrets.ENV_VARS }}" >> .env
     - name: Run Tests
-      env:
-        DB_NAME: ${{ secrets.MODIFIED_DOTENV }}
       run: |
         python3 backend/manage.py test 
