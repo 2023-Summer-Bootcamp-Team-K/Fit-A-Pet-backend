@@ -33,3 +33,4 @@ services:
       - ./grafana:/var/lib/grafana
     depends_on:
       - prometheus
+      - backend

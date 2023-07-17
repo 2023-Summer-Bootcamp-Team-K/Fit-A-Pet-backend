@@ -23,6 +23,7 @@ urlpatterns = [
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 
     # django
+    path('', include('django_prometheus.urls')),
     path('admin/', admin.site.urls),
     path('api/feeds/', include('feed.urls')),
     path('api/pets/', include('pet.urls')),
