@@ -40,4 +40,4 @@ jobs:
         username: ubuntu
         key: ${{ secrets.KEY }}
         script: |
-          sh /home/ubuntu/Fit-A-Pet-backend/config/scripts/deploy.sh
+          sh /home/ubuntu/Fit-A-Pet-backend/backend/config/scripts/deploy.sh
