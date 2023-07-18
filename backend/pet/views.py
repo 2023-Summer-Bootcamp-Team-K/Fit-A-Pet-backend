@@ -18,10 +18,10 @@ class PetCreateView(APIView):
 
     @swagger_auto_schema(request_body=PetSerializer)
     @transaction.atomic
-    def post(self, request):
+    def post(self, request, user_id):
         serializer = PetSerializer(data=request.data)
         if serializer.is_valid():
-            pet = serializer.save()
+            pet = serializer.save(user_id=user_id)
             if 'profile_image' in request.FILES:
                 image = request.FILES['profile_image']
 
@@ -121,10 +121,10 @@ class PetDeleteView(APIView):
         try:
             pet = Pet.objects.get(id=pet_id)
         except Pet.DoesNotExist:
-            return Response({"message": "Pet not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"message": "반려동물 정보를 찾을 수 없습니다."}, status=status.HTTP_404_NOT_FOUND)
 
         pet.delete()
-        return Response({"message": "Successfully deleted"}, status=status.HTTP_204_NO_CONTENT)
+        return Response({"message": "성공적으로 삭제되었습니다."}, status=status.HTTP_204_NO_CONTENT)
 
 
 class PetDetailView(APIView):
@@ -134,7 +134,7 @@ class PetDetailView(APIView):
         try:
             pet = Pet.objects.get(id=int(pet_id))
         except Pet.DoesNotExist:
-            return Response({"message":"반려동물을 찾을 수 없습니다."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"message":"반려동물 정보를 찾을 수 없습니다."}, status=status.HTTP_404_NOT_FOUND)
 
         serializer = PetSerializer(pet)
         return Response(serializer.data, status=status.HTTP_200_OK)
