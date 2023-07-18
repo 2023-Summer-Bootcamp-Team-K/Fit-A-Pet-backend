@@ -20,6 +20,35 @@ services:
     expose:
       - 8000
 
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - ./prometheus/data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    networks:
+      - app-tier
+    depends_on:
+      - backend
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana
+    ports:
+      - 3000:3000
+    volumes:
+      - ./grafana:/var/lib/grafana
+      - ./datasource.yml:/etc/grafana/provisioning/datasource.yml
+    networks:
+      - app-tier
+    depends_on:
+      - prometheus
+      - backend
+      
   nginx:
     container_name: nginx
     build:
