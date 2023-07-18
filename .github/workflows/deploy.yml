@@ -1,0 +1,35 @@
+name: Deploy to EC2
+on:
+  push:
+    branches: [ "develop" ]
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Create env file
+      run: |
+        touch .env
+        echo "${{ secrets.ENV_VARS }}" >> .env
+ 
+    - name: Copy source via ssh key
+      uses: burnett01/rsync-deployments@4.1
+      with:
+        switches: -avzr --delete --exclude 'nginx' --exclude 'docker-compose.yml'
+        remote_path: /home/ubuntu/Fit-A-Pet-backend/
+        remote_host: ${{ secrets.HOST }}
+        remote_user: ubuntu
+        remote_key: ${{ secrets.KEY }}
+
+    - name: Executing remote ssh commands using password
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ubuntu
+        key: ${{ secrets.KEY }}
+        script: |
+          sh /home/ubuntu/Fit-A-Pet-backend/backend/config/scripts/deploy.sh
