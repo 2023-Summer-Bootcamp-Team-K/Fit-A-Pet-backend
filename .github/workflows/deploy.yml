@@ -28,7 +28,7 @@ jobs:
       uses: burnett01/rsync-deployments@4.1
       with:
         switches: -avzr --delete
-        remote_path: /home/ubuntu/Fit-A-Pet-backend/backend/
+        remote_path: /home/ubuntu/Fit-A-Pet-backend/
         remote_host: ${{ secrets.HOST }}
         remote_user: ubuntu
         remote_key: ${{ secrets.KEY }}
@@ -40,4 +40,4 @@ jobs:
         username: ubuntu
         key: ${{ secrets.KEY }}
         script: |
-          sh /home/ubuntu/Fit-A-Pet-backend/backend/backend/config/scripts/deploy.sh
+          sh /home/ubuntu/Fit-A-Pet-backend/backend/config/scripts/deploy.sh
