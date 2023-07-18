@@ -18,10 +18,10 @@ class PetCreateView(APIView):
 
     @swagger_auto_schema(request_body=PetSerializer)
     @transaction.atomic
-    def post(self, request):
+    def post(self, request, user_id):
         serializer = PetSerializer(data=request.data)
         if serializer.is_valid():
-            pet = serializer.save()
+            pet = serializer.save(user_id=user_id)
             if 'profile_image' in request.FILES:
                 image = request.FILES['profile_image']
 
