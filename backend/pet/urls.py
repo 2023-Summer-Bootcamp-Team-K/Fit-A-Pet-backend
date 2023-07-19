@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import PetCreateView, PetModifyView, PetDeleteView, PetDetailView
+from .views import *
 
 app_name = 'pet'
 
@@ -8,4 +8,5 @@ urlpatterns = [
     path('modify/<int:pet_id>/', PetModifyView.as_view(), name='pet_modify'),
     path('delete/<int:pet_id>/', PetDeleteView.as_view(), name='pet_delete'),
     path('detail/<int:pet_id>/', PetDetailView.as_view(), name='pet_detail'),
+    path('list/<int:user_id>/', PetListView.as_view(), name='pet_list')
 ]
