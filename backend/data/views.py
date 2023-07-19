@@ -8,7 +8,7 @@ from django.utils import timezone
 
 from .models import Data
 from codeNumber.models import codeNumber
-from .serializers import DataSerializer
+from .serializers import DataSerializer, ChartSerializer
 from data.scheduler_crawling.crawling import run_libreView_process
 
 
@@ -29,7 +29,7 @@ def get_data(request, pet_id):
         bloodsugar = data.bloodsugar
         scan_bloodsugar = data.scan_bloodsugar
 
-        serializer = DataSerializer(data)
+        serializer = ChartSerializer(data)
         data_list.append(serializer.data)
 
     response_data = {'data_list': data_list}
@@ -55,7 +55,7 @@ def get_one_day_data(request, pet_id):
         bloodsugar = data.bloodsugar
         scan_bloodsugar = data.scan_bloodsugar
 
-        serializer = DataSerializer(data)
+        serializer = ChartSerializer(data)
         one_day_data_list.append(serializer.data)
 
     response_data = {'time_range_data_list': one_day_data_list}
@@ -81,7 +81,7 @@ def get_one_week_data(request, pet_id):
         bloodsugar = data.bloodsugar
         scan_bloodsugar = data.scan_bloodsugar
 
-        serializer = DataSerializer(data)
+        serializer = ChartSerializer(data)
         one_week_data_list.append(serializer.data)
 
     response_data = {'time_range_data_list': one_week_data_list}
@@ -107,7 +107,7 @@ def get_one_month_data(request, pet_id):
         bloodsugar = data.bloodsugar
         scan_bloodsugar = data.scan_bloodsugar
 
-        serializer = DataSerializer(data)
+        serializer = ChartSerializer(data)
         one_month_data_list.append(serializer.data)
 
     response_data = {'time_range_data_list': one_month_data_list}

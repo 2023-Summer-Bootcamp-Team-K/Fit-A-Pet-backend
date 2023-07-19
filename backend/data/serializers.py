@@ -7,3 +7,8 @@ class DataSerializer(serializers.ModelSerializer):
         model = Data
         fields = (
             'id', 'device', 'code', 'timestamp', 'record_type', 'bloodsugar', 'scan_bloodsugar')
+
+class ChartSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Data
+        fields= ('timestamp', 'bloodsugar')
