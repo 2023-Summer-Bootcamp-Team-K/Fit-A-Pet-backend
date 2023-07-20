@@ -90,6 +90,7 @@ services:
     restart: unless-stopped
 
   kibana:
+    image: elastic/kibana:7.11.1
     platform: linux/amd64
     build:
       context: kibana/
