@@ -43,6 +43,7 @@ services:
       - elasticsearch
 
   elasticsearch:
+    image: elk-elasticsearch:7.11.1
     build:
       context: elasticsearch/
       args:
@@ -68,6 +69,7 @@ services:
     restart: unless-stopped
 
   logstash:
+    image: elk-logstash:7.11.1
     build:
       context: logstash/
       args:
