@@ -90,6 +90,7 @@ services:
     restart: unless-stopped
 
   kibana:
+    platform: linux/amd64
     build:
       context: kibana/
       args:
