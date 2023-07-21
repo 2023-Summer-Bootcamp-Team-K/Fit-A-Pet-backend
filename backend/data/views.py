@@ -215,6 +215,29 @@ def calculate_hba1c(request):
 
     return JsonResponse(response_data)
 
+from django.http import JsonResponse
+from django.db import connection
 
+def get_most_recent_data(request):
+    try:
+        # Execute the raw SQL query to get the most recent data with record_type=1
+        with connection.cursor() as cursor:
+            sql_query = "SELECT timestamp, scan_bloodsugar FROM BloodSugarData WHERE record_type = 1 ORDER BY timestamp DESC LIMIT 1"
+            cursor.execute(sql_query)
+            row = cursor.fetchone()
 
+        if row is not None:
+            timestamp, scan_bloodsugar = row
+            response_data = {
+                'timestamp': timestamp.isoformat(),
+                'scan_bloodsugar': scan_bloodsugar,
+            }
+        else:
+            # If no data with record_type=1 exists, return an empty response or an error message
+            return JsonResponse({'message': 'No data with record_type=1 found.'}, status=404)
+
+        return JsonResponse(response_data)
+    except:
+        # Handle any exception that may occur during the query
+        return JsonResponse({'message': 'An error occurred while fetching the data.'}, status=500)
 
