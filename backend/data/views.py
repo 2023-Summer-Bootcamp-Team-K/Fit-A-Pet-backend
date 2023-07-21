@@ -4,7 +4,8 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from apscheduler.schedulers.background import BackgroundScheduler
 from django.contrib.auth.models import User
-from datetime import datetime, timedelta
+from django.core.cache import cache
+from datetime import timedelta
 import datetime as dt
 from django.utils import timezone
 
@@ -13,12 +14,17 @@ from codeNumber.models import codeNumber
 from .serializers import DataSerializer, ChartSerializer
 from data.scheduler_crawling.crawling import run_libreView_process
 
-
-scheduler = BackgroundScheduler()
+import hashlib
 
 
 @api_view(['GET'])
 def get_data(request, pet_id):
+    cache_key = f'get_data:{pet_id}'
+    cached_data = cache.get(cache_key)
+
+    if cached_data:
+        return Response(cached_data)
+
     data_list = []
     code_number = codeNumber.objects.get(pet_id=pet_id)
     queryset = Data.objects.filter(code=code_number.device_num)
@@ -35,11 +41,18 @@ def get_data(request, pet_id):
         data_list.append(serializer.data)
 
     response_data = {'data_list': data_list}
+    cache.set(cache_key, response_data, timeout=3600)  # 데이터를 1시간 동안 캐싱합니다
     return Response(response_data)
 
 
 @api_view(['GET'])
 def get_one_day_data(request, pet_id):
+    cache_key = f'get_one_day_data:{pet_id}'
+    cached_data = cache.get(cache_key)
+
+    if cached_data:
+        return Response(cached_data)
+
     data_list = []
     code_number = codeNumber.objects.get(pet_id=pet_id)
     queryset = Data.objects.filter(code=code_number.device_num).order_by('timestamp')  # 날짜 기준으로 정렬
@@ -67,13 +80,20 @@ def get_one_day_data(request, pet_id):
 
     if current_data['data']:
         data_list.append(current_data)
-
+      
     response_data = {'data_list': data_list}
+    cache.set(cache_key, response_data, timeout=3600)  # Cache the data for 1 hour
     return Response(response_data)
 
 
 @api_view(['GET'])
 def get_one_week_data(request, pet_id):
+    cache_key = f'get_one_week_data:{pet_id}'
+    cached_data = cache.get(cache_key)
+
+    if cached_data:
+        return Response(cached_data)
+
     data_list = []
     code_number = codeNumber.objects.get(pet_id=pet_id)
     queryset = Data.objects.filter(code=code_number.device_num).order_by('timestamp')  # 날짜 기준으로 정렬
@@ -105,12 +125,19 @@ def get_one_week_data(request, pet_id):
         data_list.append(current_week_data)
 
     response_data = {'data_list': data_list}
+    cache.set(cache_key, response_data, timeout=3600)  # Cache the data for 1 hour
     return Response(response_data)
 
 
 
 @api_view(['GET'])
 def get_one_month_data(request, pet_id):
+    cache_key = f'get_one_month_data:{pet_id}'
+    cached_data = cache.get(cache_key)
+
+    if cached_data:
+        return Response(cached_data)
+
     data_list = []
     code_number = codeNumber.objects.get(pet_id=pet_id)
     queryset = Data.objects.filter(code=code_number.device_num).order_by('timestamp')  # 날짜 기준으로 정렬
@@ -142,6 +169,7 @@ def get_one_month_data(request, pet_id):
         data_list.append(current_month_data)
 
     response_data = {'data_list': data_list}
+    cache.set(cache_key, response_data, timeout=3600)  # Cache the data for 1 hour
     return Response(response_data)
 
 
