@@ -1,3 +1,5 @@
+import datetime
+
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -9,7 +11,7 @@ from django.utils import timezone
 
 from .models import Data
 from codeNumber.models import codeNumber
-from .serializers import DataSerializer
+from .serializers import DataSerializer, ChartSerializer
 from data.scheduler_crawling.crawling import run_libreView_process
 
 import hashlib
@@ -35,7 +37,7 @@ def get_data(request, pet_id):
         bloodsugar = data.bloodsugar
         scan_bloodsugar = data.scan_bloodsugar
 
-        serializer = DataSerializer(data)
+        serializer = ChartSerializer(data)
         data_list.append(serializer.data)
 
     response_data = {'data_list': data_list}
@@ -51,27 +53,35 @@ def get_one_day_data(request, pet_id):
     if cached_data:
         return Response(cached_data)
 
-    one_day_data_list = []
+    data_list = []
     code_number = codeNumber.objects.get(pet_id=pet_id)
-    one_day_queryset = Data.objects.filter(code=code_number.device_num)
+    queryset = Data.objects.filter(code=code_number.device_num).order_by('timestamp')  # 날짜 기준으로 정렬
 
-    user_datetime = dt.datetime(2023, 6, 3, 0, 0, 0, tzinfo=timezone.get_current_timezone())
+    current_date = None
+    current_data = None
 
-    one_day_ago = user_datetime - timedelta(days=1)
-    one_day_data = one_day_queryset.filter(timestamp__gte=one_day_ago, timestamp__lte=user_datetime)
+    for data in queryset:
+        timestamp = data.timestamp
+        date = timestamp.astimezone(timezone.get_current_timezone()).date()
+        time = timestamp.astimezone(timezone.get_current_timezone()).time()
 
-    for data in one_day_data:
-        device = data.device
-        code = codeNumber.device_num
-        timestamp = data.timestamp.isoformat()
-        record_type = data.record_type
-        bloodsugar = data.bloodsugar
-        scan_bloodsugar = data.scan_bloodsugar
+        if current_date is None:
+            current_date = date
+            current_data = {'date': date.isoformat(), 'data': []}
 
-        serializer = DataSerializer(data)
-        one_day_data_list.append(serializer.data)
+        if current_date != date:
+            if current_data['data']:
+                data_list.append(current_data)
+            current_date = date
+            current_data = {'date': date.isoformat(), 'data': []}
 
-    response_data = {'time_range_data_list': one_day_data_list}
+        serializer = ChartSerializer(data)
+        current_data['data'].append(serializer.data)
+
+    if current_data['data']:
+        data_list.append(current_data)
+      
+    response_data = {'data_list': data_list}
     cache.set(cache_key, response_data, timeout=3600)  # Cache the data for 1 hour
     return Response(response_data)
 
@@ -84,29 +94,40 @@ def get_one_week_data(request, pet_id):
     if cached_data:
         return Response(cached_data)
 
-    one_week_data_list = []
+    data_list = []
     code_number = codeNumber.objects.get(pet_id=pet_id)
-    one_week_queryset = Data.objects.filter(code=code_number.device_num)
+    queryset = Data.objects.filter(code=code_number.device_num).order_by('timestamp')  # 날짜 기준으로 정렬
 
-    user_datetime = dt.datetime(2023, 6, 3, 0, 0, 0, tzinfo=timezone.get_current_timezone())
+    current_week_start = None
+    current_week_data = None
 
-    one_week_ago = user_datetime - timedelta(days=7)
-    one_week_data = one_week_queryset.filter(timestamp__gte=one_week_ago, timestamp__lte=user_datetime)
+    for data in queryset:
+        timestamp = data.timestamp
+        date = timestamp.astimezone(timezone.get_current_timezone()).date()
+        time = timestamp.astimezone(timezone.get_current_timezone()).time()
 
-    for data in one_week_data:
-        device = data.device
-        code = codeNumber.device_num
-        timestamp = data.timestamp.isoformat()
-        record_type = data.record_type
-        bloodsugar = data.bloodsugar
-        scan_bloodsugar = data.scan_bloodsugar
+        week_start = date - timedelta(days=date.weekday())  # 해당 주의 시작일 계산
 
-        serializer = DataSerializer(data)
-        one_week_data_list.append(serializer.data)
+        if current_week_start is None:
+            current_week_start = week_start
+            current_week_data = {'week_start': week_start.isoformat(), 'data': []}
 
-    response_data = {'time_range_data_list': one_week_data_list}
+        if current_week_start != week_start:
+            if current_week_data['data']:
+                data_list.append(current_week_data)
+            current_week_start = week_start
+            current_week_data = {'week_start': week_start.isoformat(), 'data': []}
+
+        serializer = ChartSerializer(data)
+        current_week_data['data'].append(serializer.data)
+
+    if current_week_data['data']:
+        data_list.append(current_week_data)
+
+    response_data = {'data_list': data_list}
     cache.set(cache_key, response_data, timeout=3600)  # Cache the data for 1 hour
     return Response(response_data)
+
 
 
 @api_view(['GET'])
@@ -117,29 +138,40 @@ def get_one_month_data(request, pet_id):
     if cached_data:
         return Response(cached_data)
 
-    one_month_data_list = []
+    data_list = []
     code_number = codeNumber.objects.get(pet_id=pet_id)
-    one_month_queryset = Data.objects.filter(code=code_number.device_num)
+    queryset = Data.objects.filter(code=code_number.device_num).order_by('timestamp')  # 날짜 기준으로 정렬
 
-    user_datetime = dt.datetime(2023, 6, 3, 0, 0, 0, tzinfo=timezone.get_current_timezone())
+    current_month_start = None
+    current_month_data = None
 
-    one_month_ago = user_datetime - timedelta(days=30)
-    one_month_data = one_month_queryset.filter(timestamp__gte=one_month_ago, timestamp__lte=user_datetime)
+    for data in queryset:
+        timestamp = data.timestamp
+        date = timestamp.astimezone(timezone.get_current_timezone()).date()
+        time = timestamp.astimezone(timezone.get_current_timezone()).time()
 
-    for data in one_month_data:
-        device = data.device
-        code = codeNumber.device_num
-        timestamp = data.timestamp.isoformat()
-        record_type = data.record_type
-        bloodsugar = data.bloodsugar
-        scan_bloodsugar = data.scan_bloodsugar
+        month_start = date.replace(day=1)  # 해당 월의 시작일 계산
 
-        serializer = DataSerializer(data)
-        one_month_data_list.append(serializer.data)
+        if current_month_start is None:
+            current_month_start = month_start
+            current_month_data = {'month_start': month_start.isoformat(), 'data': []}
 
-    response_data = {'time_range_data_list': one_month_data_list}
+        if current_month_start != month_start:
+            if current_month_data['data']:
+                data_list.append(current_month_data)
+            current_month_start = month_start
+            current_month_data = {'month_start': month_start.isoformat(), 'data': []}
+
+        serializer = ChartSerializer(data)
+        current_month_data['data'].append(serializer.data)
+
+    if current_month_data['data']:
+        data_list.append(current_month_data)
+
+    response_data = {'data_list': data_list}
     cache.set(cache_key, response_data, timeout=3600)  # Cache the data for 1 hour
     return Response(response_data)
+
 
 @api_view(['POST'])
 def start_scheduler(request, user_id):
