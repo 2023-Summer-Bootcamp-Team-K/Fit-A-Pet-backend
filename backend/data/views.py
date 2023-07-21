@@ -2,19 +2,18 @@ import datetime
 
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from apscheduler.schedulers.background import BackgroundScheduler
 from django.contrib.auth.models import User
 from django.core.cache import cache
-from datetime import timedelta
-import datetime as dt
 from django.utils import timezone
+from django.http import JsonResponse
+from django.db import connection
+from datetime import datetime, timedelta
 
 from .models import Data
 from codeNumber.models import codeNumber
-from .serializers import DataSerializer, ChartSerializer
+from .serializers import ChartSerializer
 from data.scheduler_crawling.crawling import run_libreView_process
 
-import hashlib
 
 
 @api_view(['GET'])
@@ -184,3 +183,38 @@ def start_scheduler(request, user_id):
         return Response({'message': '스케줄러가 성공적으로 실행되었습니다.'})
     except:
         return Response({'message': '사용자를 찾을 수 없습니다.'})
+
+
+def calculate_hba1c(request):
+    start_date = datetime(2023, 6, 1)
+    end_date = start_date + timedelta(days=1)
+
+    with connection.cursor() as cursor:
+        cursor.execute(
+            "SELECT AVG(bloodsugar) FROM BloodSugarData "
+            "WHERE timestamp >= %s AND timestamp < %s",
+            [start_date, end_date]
+        )
+        average_blood_sugar = cursor.fetchone()[0]
+
+    average_blood_sugar_float = float(average_blood_sugar)
+
+    print("Average Blood Sugar:", average_blood_sugar_float)
+
+    if average_blood_sugar_float is not None:
+        hba1c = (average_blood_sugar_float + 46.7) / 28.7
+        hba1c_rounded = round(hba1c, 1)
+    else:
+        hba1c_rounded = None
+
+    print("HbA1c:", hba1c_rounded)
+
+    response_data = {
+        "hba1c": hba1c_rounded,
+    }
+
+    return JsonResponse(response_data)
+
+
+
+
