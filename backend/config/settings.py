@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'storages',
     'django_restframework',
     'django_prometheus',
+    'django_redis',
     'rest_framework',
     'drf_yasg',
     'pet',
