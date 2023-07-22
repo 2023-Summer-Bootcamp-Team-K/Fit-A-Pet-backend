@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     'django_prometheus',
     'rest_framework',
     'drf_yasg',
+    'django_elasticsearch_dsl',
+    'django_elasticsearch_dsl_drf',
     'pet',
     'data',
     'codeNumber',
@@ -167,3 +169,9 @@ FILE_UPLOAD_HANDLERS = [
 
 PROMETHEUS_EXPORT_MIGRATIONS = False
 
+
+ELASTICSEARCH_DSL = {
+    'default': {
+        'hosts': 'localhost:9200',
+    },
+}
