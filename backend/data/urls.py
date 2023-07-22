@@ -10,5 +10,7 @@ urlpatterns = [
     path('one-month/<int:pet_id>/', views.get_one_month_data),
     path('scheduler/<int:user_id>/', start_scheduler, name='start-scheduler'),
     path('hba1c/', views.calculate_hba1c),
-    path('recent/', views.get_most_recent_data)
+    path('recent/', views.get_most_recent_data),
+    path('<int:month>-<int:day>/<int:pet_id>/', views.get_one_day_data),
+    path('<int:start_month>-<int:start_day>/<int:end_month>-<int:end_day>/<int:pet_id>/', views.get_interval_data),
 ]

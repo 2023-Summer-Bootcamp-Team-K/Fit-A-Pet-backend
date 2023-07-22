@@ -215,8 +215,6 @@ def calculate_hba1c(request):
 
     return JsonResponse(response_data)
 
-from django.http import JsonResponse
-from django.db import connection
 
 def get_most_recent_data(request):
     try:
@@ -234,10 +232,50 @@ def get_most_recent_data(request):
             }
         else:
             # If no data with record_type=1 exists, return an empty response or an error message
-            return JsonResponse({'message': 'No data with record_type=1 found.'}, status=404)
+            return JsonResponse({'message': 'record_type이 1인 데이터를 찾을 수 없습니다.'}, status=404)
 
         return JsonResponse(response_data)
     except:
         # Handle any exception that may occur during the query
-        return JsonResponse({'message': 'An error occurred while fetching the data.'}, status=500)
+        return JsonResponse({'message': '데이터를 불러오는 과정에서 오류가 발생하였습니다.'}, status=500)
 
+
+@api_view(['GET'])
+def get_one_day_data(request, month, day, pet_id):
+    data_list = []
+    code_number = codeNumber.objects.get(pet_id=pet_id)
+    queryset = Data.objects.filter(
+        code=code_number.device_num,
+        timestamp__date=datetime(year=2023, month=month, day=day)
+    ).order_by('timestamp')  # 해당 날짜의 데이터만 가져오고 날짜 기준으로 정렬
+
+    current_week_start = None
+    current_week_data = None
+
+    for data in queryset:
+        serializer = ChartSerializer(data)
+        data_list.append(serializer.data)
+
+    response_data = {'data_list': data_list}
+    return Response(response_data)
+
+
+@api_view(['GET'])
+def get_interval_data(request, start_month, start_day, end_month, end_day, pet_id):
+    data_list = []
+    code_number = codeNumber.objects.get(pet_id=pet_id)
+
+    start_date = datetime(year=2023, month=start_month, day=start_day)
+    end_date = datetime(year=2023, month=end_month, day=end_day)
+
+    queryset = Data.objects.filter(
+        code=code_number.device_num,
+        timestamp__date__range=[start_date, end_date]
+    ).order_by('timestamp')
+
+    for data in queryset:
+        serializer = ChartSerializer(data)
+        data_list.append(serializer.data)
+
+    response_data = {'data_list': data_list}
+    return Response(response_data)
