@@ -2,19 +2,18 @@ import datetime
 
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from apscheduler.schedulers.background import BackgroundScheduler
 from django.contrib.auth.models import User
 from django.core.cache import cache
-from datetime import timedelta
-import datetime as dt
 from django.utils import timezone
+from django.http import JsonResponse
+from django.db import connection
+from datetime import datetime, timedelta
 
 from .models import Data
 from codeNumber.models import codeNumber
-from .serializers import DataSerializer, ChartSerializer
+from .serializers import ChartSerializer
 from data.scheduler_crawling.crawling import run_libreView_process
 
-import hashlib
 
 
 @api_view(['GET'])
@@ -184,3 +183,99 @@ def start_scheduler(request, user_id):
         return Response({'message': '스케줄러가 성공적으로 실행되었습니다.'})
     except:
         return Response({'message': '사용자를 찾을 수 없습니다.'})
+
+
+def calculate_hba1c(request):
+    start_date = datetime(2023, 6, 1)
+    end_date = start_date + timedelta(days=1)
+
+    with connection.cursor() as cursor:
+        cursor.execute(
+            "SELECT AVG(bloodsugar) FROM BloodSugarData "
+            "WHERE timestamp >= %s AND timestamp < %s",
+            [start_date, end_date]
+        )
+        average_blood_sugar = cursor.fetchone()[0]
+
+    average_blood_sugar_float = float(average_blood_sugar)
+
+    print("Average Blood Sugar:", average_blood_sugar_float)
+
+    if average_blood_sugar_float is not None:
+        hba1c = (average_blood_sugar_float + 46.7) / 28.7
+        hba1c_rounded = round(hba1c, 1)
+    else:
+        hba1c_rounded = None
+
+    print("HbA1c:", hba1c_rounded)
+
+    response_data = {
+        "hba1c": hba1c_rounded,
+    }
+
+    return JsonResponse(response_data)
+
+
+def get_most_recent_data(request):
+    try:
+        # Execute the raw SQL query to get the most recent data with record_type=1
+        with connection.cursor() as cursor:
+            sql_query = "SELECT timestamp, scan_bloodsugar FROM BloodSugarData WHERE record_type = 1 ORDER BY timestamp DESC LIMIT 1"
+            cursor.execute(sql_query)
+            row = cursor.fetchone()
+
+        if row is not None:
+            timestamp, scan_bloodsugar = row
+            response_data = {
+                'timestamp': timestamp.isoformat(),
+                'scan_bloodsugar': scan_bloodsugar,
+            }
+        else:
+            # If no data with record_type=1 exists, return an empty response or an error message
+            return JsonResponse({'message': 'record_type이 1인 데이터를 찾을 수 없습니다.'}, status=404)
+
+        return JsonResponse(response_data)
+    except:
+        # Handle any exception that may occur during the query
+        return JsonResponse({'message': '데이터를 불러오는 과정에서 오류가 발생하였습니다.'}, status=500)
+
+
+@api_view(['GET'])
+def get_one_day_data(request, month, day, pet_id):
+    data_list = []
+    code_number = codeNumber.objects.get(pet_id=pet_id)
+    queryset = Data.objects.filter(
+        code=code_number.device_num,
+        timestamp__date=datetime(year=2023, month=month, day=day)
+    ).order_by('timestamp')  # 해당 날짜의 데이터만 가져오고 날짜 기준으로 정렬
+
+    current_week_start = None
+    current_week_data = None
+
+    for data in queryset:
+        serializer = ChartSerializer(data)
+        data_list.append(serializer.data)
+
+    response_data = {'data_list': data_list}
+    return Response(response_data)
+
+
+@api_view(['GET'])
+def get_interval_data(request, start_month, start_day, end_month, end_day, pet_id):
+    data_list = []
+    code_number = codeNumber.objects.get(pet_id=pet_id)
+
+    start_date = datetime(year=2023, month=start_month, day=start_day)
+    end_date = datetime(year=2023, month=end_month, day=end_day)
+
+    queryset = Data.objects.filter(
+        code=code_number.device_num,
+        timestamp__date__range=[start_date, end_date]
+    ).order_by('timestamp')
+
+    for data in queryset:
+        serializer = ChartSerializer(data)
+        data_list.append(serializer.data)
+
+    response_data = {'data_list': data_list}
+    return Response(response_data)

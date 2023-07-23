@@ -18,7 +18,7 @@ class Pet(models.Model):
     species = models.CharField(max_length=20)
     gender = models.CharField(max_length=20, choices=GENDER_CHOICES)
     weight = models.FloatField()
-    started_date = models.DateTimeField()
+    started_date = models.DateField()
     feed = models.CharField(max_length=32)
     sore_spot = models.CharField(max_length=10)
     profile_url = models.URLField(editable=False, null=True, blank=True)
