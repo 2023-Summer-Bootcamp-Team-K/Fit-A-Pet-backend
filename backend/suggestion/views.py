@@ -10,10 +10,10 @@ class SuggestionView(APIView):
             # user_id를 기반으로 유저 인스턴스를 가져옵니다.
             user = User.objects.get(pk=user_id)
         except User.DoesNotExist:
-            return Response({"status": 400, "success": False, "message": "유효하지 않은 사용자 ID입니다."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"status": 400, "success": False, "message": "존재하지 않은 사용자 ID입니다."}, status=status.HTTP_400_BAD_REQUEST)
 
         serializer = SuggestionSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(user=user)
-            return Response({"status": 201, "success": True, "message": "사용자 제안이 성공적으로 등록되었습니다.", "result": serializer.data}, status=status.HTTP_201_CREATED)
+            return Response({"status": 201, "success": True, "message": "사용자 건의사항이 성공적으로 등록되었습니다.", "result": serializer.data}, status=status.HTTP_201_CREATED)
         return Response({"status": 400, "success": False, "message": "필수 값이 누락되었습니다.", "errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
