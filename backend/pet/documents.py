@@ -26,4 +26,7 @@ class PetDocument(Document):
             'sore_spot',
             'profile_url',
             'profile_image',
+            'created_at',
+            'updated_at',
+            'is_deleted',
         ]
