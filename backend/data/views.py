@@ -8,6 +8,7 @@ from django.utils import timezone
 from django.http import JsonResponse
 from django.db import connection
 from datetime import datetime, timedelta
+from django.db.models import Q
 
 from .models import Data
 from codeNumber.models import codeNumber
@@ -272,6 +273,24 @@ def get_interval_data(request, start_month, start_day, end_month, end_day, pet_i
         code=code_number.device_num,
         timestamp__date__range=[start_date, end_date]
     ).order_by('timestamp')
+
+    for data in queryset:
+        serializer = ChartSerializer(data)
+        data_list.append(serializer.data)
+
+    response_data = {'data_list': data_list}
+    return Response(response_data)
+
+
+@api_view(['GET'])
+def get_month_data(request, month, pet_id):
+    data_list = []
+    code_number = codeNumber.objects.get(pet_id=pet_id)
+    queryset = Data.objects.filter(
+        code=code_number.device_num,
+        timestamp__year=2023,
+        timestamp__month=month
+    ).order_by('timestamp')  # 해당 월의 데이터만 가져오고 날짜 기준으로 정렬
 
     for data in queryset:
         serializer = ChartSerializer(data)
