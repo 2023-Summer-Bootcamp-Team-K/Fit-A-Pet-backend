@@ -12,7 +12,7 @@ class Pet(models.Model):
         ('neutered male', 'Neutered Male'),
     )
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
     name = models.CharField(max_length=10)
     age = models.IntegerField()
     species = models.CharField(max_length=20)
