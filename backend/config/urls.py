@@ -28,4 +28,5 @@ urlpatterns = [
     path('api/feeds/', include('feed.urls')),
     path('api/pets/', include('pet.urls')),
     path('api/data/', include('data.urls')),
+    path('api/suggestions/', include('suggestion.urls')),
 ]

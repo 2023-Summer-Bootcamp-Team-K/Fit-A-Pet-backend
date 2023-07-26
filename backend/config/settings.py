@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'data',
     'codeNumber',
     'feed',
+    'suggestion',
 ]
 
 MIDDLEWARE = [
