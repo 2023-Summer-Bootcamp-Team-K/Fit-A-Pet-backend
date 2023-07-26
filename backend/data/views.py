@@ -1,12 +1,13 @@
 import datetime
 
+from django.utils.datetime_safe import date
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.utils import timezone
 from django.http import JsonResponse
-from django.db import connection
+from django.db import connection, models
 from datetime import datetime, timedelta
 from django.db.models import Q
 
@@ -14,7 +15,6 @@ from .models import Data
 from codeNumber.models import codeNumber
 from .serializers import ChartSerializer
 from data.scheduler_crawling.crawling import run_libreView_process
-
 
 
 @api_view(['GET'])
@@ -80,7 +80,7 @@ def get_one_day_data(request, pet_id):
 
     if current_data['data']:
         data_list.append(current_data)
-      
+
     response_data = {'data_list': data_list}
     cache.set(cache_key, response_data, timeout=3600)  # Cache the data for 1 hour
     return Response(response_data)
@@ -129,7 +129,6 @@ def get_one_week_data(request, pet_id):
     return Response(response_data)
 
 
-
 @api_view(['GET'])
 def get_one_month_data(request, pet_id):
     cache_key = f'get_one_month_data:{pet_id}'
@@ -175,7 +174,6 @@ def get_one_month_data(request, pet_id):
 
 @api_view(['POST'])
 def start_scheduler(request, user_id):
-
     try:
         user = User.objects.get(pk=user_id)
         scheduler.add_job(run_libreView_process, 'date', args=[user.id])
@@ -186,19 +184,22 @@ def start_scheduler(request, user_id):
         return Response({'message': '사용자를 찾을 수 없습니다.'})
 
 
-def calculate_hba1c(request):
-    start_date = datetime(2023, 6, 1)
-    end_date = start_date + timedelta(days=1)
+def calculate_hba1c(request, pet_id):
+    try:
+        code_number = codeNumber.objects.get(pet_id=pet_id)
+    except codeNumber.DoesNotExist:
+        return JsonResponse({'message': 'codeNumber data not found for the specified pet_id'}, status=404)
 
-    with connection.cursor() as cursor:
-        cursor.execute(
-            "SELECT AVG(bloodsugar) FROM BloodSugarData "
-            "WHERE timestamp >= %s AND timestamp < %s",
-            [start_date, end_date]
-        )
-        average_blood_sugar = cursor.fetchone()[0]
+    end_date = date.today()
+    start_date = end_date - timedelta(days=1)
 
-    average_blood_sugar_float = float(average_blood_sugar)
+    queryset = Data.objects.filter(
+        code=code_number.device_num,
+        timestamp__range=[start_date, end_date]
+    )
+
+    average_blood_sugar = queryset.aggregate(models.Avg('bloodsugar'))['bloodsugar__avg']
+    average_blood_sugar_float = float(average_blood_sugar) if average_blood_sugar is not None else None
 
     print("Average Blood Sugar:", average_blood_sugar_float)
 
@@ -217,25 +218,29 @@ def calculate_hba1c(request):
     return JsonResponse(response_data)
 
 
-def get_most_recent_data(request):
+def get_most_recent_data(request, pet_id):
     try:
-        # Execute the raw SQL query to get the most recent data with record_type=1
-        with connection.cursor() as cursor:
-            sql_query = "SELECT timestamp, scan_bloodsugar FROM BloodSugarData WHERE record_type = 1 ORDER BY timestamp DESC LIMIT 1"
-            cursor.execute(sql_query)
-            row = cursor.fetchone()
+        # Get the code_number for the specified pet_id
+        code_number = codeNumber.objects.get(pet_id=pet_id)
 
-        if row is not None:
-            timestamp, scan_bloodsugar = row
+        # Get the most recent data with record_type=1 and matching code
+        queryset = Data.objects.filter(code=code_number.device_num, record_type=1).order_by('-timestamp')[:1]
+
+        if queryset.exists():
+            data = queryset.first()
             response_data = {
-                'timestamp': timestamp.isoformat(),
-                'scan_bloodsugar': scan_bloodsugar,
+                'timestamp': data.timestamp.isoformat(),
+                'scan_bloodsugar': data.scan_bloodsugar,
             }
         else:
             # If no data with record_type=1 exists, return an empty response or an error message
             return JsonResponse({'message': 'record_type이 1인 데이터를 찾을 수 없습니다.'}, status=404)
 
         return JsonResponse(response_data)
+    except codeNumber.DoesNotExist:
+        return JsonResponse({'message': 'codeNumber data not found for the specified pet_id'}, status=404)
+    except Data.DoesNotExist:
+        return JsonResponse({'message': 'Data not found for the specified pet_id'}, status=404)
     except:
         # Handle any exception that may occur during the query
         return JsonResponse({'message': '데이터를 불러오는 과정에서 오류가 발생하였습니다.'}, status=500)
