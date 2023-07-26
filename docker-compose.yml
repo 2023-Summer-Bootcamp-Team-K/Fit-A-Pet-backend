@@ -34,6 +34,7 @@ services:
       - app-tier
     depends_on:
       - backend
+      - cadvisor
 
   grafana:
     container_name: grafana
@@ -72,6 +73,7 @@ services:
 
   node-exporter:
     image: prom/node-exporter
+    container_name: node-exporter
     volumes:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
@@ -86,6 +88,19 @@ services:
     expose:
       - 9100
     restart: always
+    networks:
+      - app-tier
+
+  cadvisor:
+    image: zcube/cadvisor
+    container_name: cadvisor
+    ports:
+      - 8080:8080
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
     networks:
       - app-tier
 
