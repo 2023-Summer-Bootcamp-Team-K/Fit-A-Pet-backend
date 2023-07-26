@@ -53,9 +53,8 @@ def run_libreView_process(user_id):
         "safebrowsing.enabled": True
     }
     chrome_options.add_experimental_option("prefs", prefs)
-    # chrome_options.add_argument('--headless')
+    chrome_options.add_argument('--headless')
     # Selenium 웹 드라이버 설정
-    # driver = webdriver.Chrome(options=chrome_options)  # 크롬 드라이버 경로를 지정해주세요
     driver = webdriver.Chrome(options=chrome_options)
     time.sleep(3)
 
