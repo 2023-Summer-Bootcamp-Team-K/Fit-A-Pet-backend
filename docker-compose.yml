@@ -30,11 +30,10 @@ services:
       - ./prometheus/data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
-    networks:
-      - app-tier
     depends_on:
       - backend
-      - cadvisor
+    networks:
+      - app-tier
 
   grafana:
     container_name: grafana
@@ -91,18 +90,19 @@ services:
     networks:
       - app-tier
 
-  cadvisor:
-    image: zcube/cadvisor
-    container_name: cadvisor
+  alertmanager:
+    image: prom/alertmanager
+    container_name: alert-manager
     ports:
-      - 8080:8080
+      - 9093:9093
     volumes:
-      - /:/rootfs:ro
-      - /var/run:/var/run:rw
-      - /sys:/sys:ro
-      - /var/lib/docker/:/var/lib/docker:ro
+      - ./alertmanager/:/etc/alertmanager/
     networks:
       - app-tier
+    restart: always
+    command:
+      - "--config.file=/etc/alertmanager/config.yml"
+      - "--storage.path=/alertmanager"
 
 networks:
   app-tier:
