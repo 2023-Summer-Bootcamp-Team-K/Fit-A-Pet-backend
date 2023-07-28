@@ -30,10 +30,12 @@ services:
       - ./prometheus/data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
-    networks:
-      - app-tier
+    links:
+      - alertmanager:alertmanager
     depends_on:
       - backend
+    networks:
+      - app-tier
 
   grafana:
     container_name: grafana
@@ -69,6 +71,40 @@ services:
     depends_on:
       - backend
     restart: always
+
+  node-exporter:
+    image: prom/node-exporter
+    container_name: node-exporter
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - "--path.procfs=/host/proc"
+      - "--path.sysfs=/host/sys"
+      - --collector.filesystem.ignored-mount-points
+      - "^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)"
+    ports:
+      - 9100:9100
+    expose:
+      - 9100
+    restart: always
+    networks:
+      - app-tier
+
+  alertmanager:
+    image: prom/alertmanager
+    container_name: alert-manager
+    ports:
+      - 9093:9093
+    volumes:
+      - ./alertmanager/:/etc/alertmanager/
+    networks:
+      - app-tier
+    restart: always
+    command:
+      - "--config.file=/etc/alertmanager/config.yml"
+      - "--storage.path=/alertmanager"
 
 networks:
   app-tier:
