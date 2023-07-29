@@ -4,10 +4,10 @@ from rest_framework.response import Response
 from rest_framework import status
 from .serializers import SuggestionSerializer
 
+
 class SuggestionView(APIView):
     def post(self, request, user_id):
         try:
-            # user_id를 기반으로 유저 인스턴스를 가져옵니다.
             user = User.objects.get(pk=user_id)
         except User.DoesNotExist:
             return Response({"status": 400, "success": False, "message": "존재하지 않은 사용자 ID입니다."}, status=status.HTTP_400_BAD_REQUEST)

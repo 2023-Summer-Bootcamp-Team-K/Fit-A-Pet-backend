@@ -3,7 +3,6 @@ from django.db import models
 from pet.models import Pet
 
 
-# Create your models here.
 class Meat(models.Model):
     name = models.CharField(max_length=32)
     description = models.CharField(max_length=100, null=True)
