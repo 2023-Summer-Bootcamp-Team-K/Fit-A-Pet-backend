@@ -19,7 +19,6 @@ from data.models import Data
 def import_csv_to_db(file_name):
     current_directory = os.getcwd()
     csv_file_path = os.path.join(current_directory, 'data/scheduler_crawling/csv_file', file_name)
-    # fieldnames = ['장치', '일련 번호', '장치 타임 스탬프', '장치 타임 스탬프', '기록 유형', '과거 혈당 mg/dL', '혈당 스캔 mg/dL']
     with open(csv_file_path, 'r', newline='', encoding='utf-8') as file:
         next(file)
         next(file)
@@ -43,8 +42,6 @@ def import_csv_to_db(file_name):
 def run_libreView_process(user_id):
 
     user = User.objects.get(pk=user_id)
-    first_name = user.first_name
-    last_name = user.last_name
     chrome_options = Options()
     download_dir = os.path.join(os.getcwd(), 'data/scheduler_crawling/csv_file')
     prefs = {
@@ -187,22 +184,6 @@ def run_libreView_process(user_id):
     download_button = driver.find_element(By.ID, 'patient-profile-data-download-button')
     download_button.click()
     time.sleep(15)
-
-    # frame = WebDriverWait(driver, 10).until(EC.frame_to_be_available_and_switch_to_it((By.NAME, 'a-kdd93qcd3n5w')))
-
-    # check_box = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.NAME, 'a-kdd93qcd3n5w')))
-    # check_box.click()
-
-    # # reCAPTCHA 프레임을 찾습니다.
-    # frame = driver.find_element(By.NAME, 'a-kdd93qcd3n5w')
-    # driver.switch_to.frame(frame)
-    # time.sleep(5)
-
-    # # "확인란"을 클릭합니다.
-    # element = driver.find_element(By.ID, 'recaptcha-anchor')
-    # element.click()
-
-    # driver.switch_to.default_content()
 
     downloaded_button = driver.find_element(By.ID, 'exportData-modal-download-button')
     downloaded_button.click()
