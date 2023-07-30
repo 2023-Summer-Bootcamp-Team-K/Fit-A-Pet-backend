@@ -40,7 +40,7 @@ class PetAPITestCase(TestCase):
             species="푸들",
             gender="수컷",
             weight=2.7,
-            started_date=timezone.make_aware(timezone.datetime(2023, 7, 30)),
+            started_date="2023-07-30",
             feed="돼지고기 사료",
             sore_spot="눈",
             profile_url="https://fit-a-pet-bucket.s3.ap-northeast-2.amazonaws.com/fitapet/dog.jpeg"
@@ -53,7 +53,7 @@ class PetAPITestCase(TestCase):
             "species": "골든리트리버",
             "gender": "암컷",
             "weight": 2.8,
-            "started_date": "2023-07-31T00:00:00Z",
+            "started_date": "2023-07-31",
             "feed": "소고기 사료",
             "sore_spot": "기관지",
             "profile_url": "https://fit-a-pet-bucket.s3.ap-northeast-2.amazonaws.com/fitapet/dog.jpeg"
@@ -94,7 +94,7 @@ class PetAPITestCase(TestCase):
             species="푸들",
             gender="수컷",
             weight=2.7,
-            started_date=timezone.datetime(2023, 7, 30),
+            started_date="2023-07-30",
             feed="돼지고기 사료",
             sore_spot="눈",
             profile_url="https://fit-a-pet-bucket.s3.ap-northeast-2.amazonaws.com/fitapet/dog.jpeg"
