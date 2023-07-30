@@ -15,9 +15,11 @@ class FeedAPITestCase(TestCase):
     def setUp(self):
         self.client = APIClient()
 
-        self.user = User.objects.create_user(username="test_user", email="test@pet.com", password="123")
+        self.user = User.objects.create_user(id=1, username="test_user", email="test@pet.com", password="123")
+        self.user2 = User.objects.create_user(id=2, username="test_user2", email="test2@pet.com", password="1234")
 
-        self.pet = Pet.objects.create(id=10, name="Test Pet", feed="닭고기 사료", age=2, sore_spot="관절", weight=4, started_date=timezone.make_aware(datetime.datetime(2023, 7, 12, 0, 0, 0)))
+        self.pet = Pet.objects.create(user_id=1, id=10, name="Test Pet", feed="닭고기 사료", age=2, sore_spot="관절", weight=4, started_date=timezone.make_aware(datetime.datetime(2023, 7, 12, 0, 0, 0)))
+        self.pet2 = Pet.objects.create(user_id=2, id=11, name="Test Pet", feed="닭고기 사료", age=2, sore_spot="관절", weight=4, started_date=timezone.make_aware(datetime.datetime(2023, 7, 12, 0, 0, 0)))
 
         self.meat = Meat.objects.create(name="소고기 사료")
         self.meat2 = Meat.objects.create(name="돼지고기 사료")
@@ -50,3 +52,11 @@ class FeedAPITestCase(TestCase):
 
         print("테스트 성공")
 
+
+    def test_feed_recommendation_invalid_pet(self):
+        url = reverse('feed:feed-recommend', args=[9999])
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        print("테스트 성공")
