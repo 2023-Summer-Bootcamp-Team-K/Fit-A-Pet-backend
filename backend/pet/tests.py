@@ -6,8 +6,6 @@ from .models import Pet
 from django.contrib.auth.models import User
 from django.utils import timezone
 
-import traceback
-
 
 class PetAPITestCase(TestCase):
     def setUp(self):
@@ -62,18 +60,8 @@ class PetAPITestCase(TestCase):
         }
 
         response = self.client.patch(url, data=data)
-        if response.status_code != status.HTTP_200_OK:
-            try:
-                response.raise_for_status()  # HTTP 에러 체크
-                response_data = response.json()  # JSON 데이터로 변환
-                print(response_data['message'])  # 에러 메시지 출력
-            except Exception as e:
-                print("에러 발생:")
-                traceback.print_exc()  # 에러의 트레이스백 출력
-                return
-
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['result']['name'], "Mod Test")  # 'result'에서 'name'을 찾음
+        self.assertEqual(response.data['result']['name'], "Mod Test")
 
         print("테스트 성공")
 
@@ -136,6 +124,6 @@ class PetAPITestCase(TestCase):
         url = reverse('pet:pet_delete', kwargs={'pet_id': pet.id})
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertFalse(Pet.objects.filter(id=pet.id).exists())  # 수정된 부분
+        self.assertFalse(Pet.objects.filter(id=pet.id).exists())
 
         print("테스트 성공")
