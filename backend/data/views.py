@@ -59,13 +59,15 @@ def get_most_recent_data(request, pet_id):
                 'scan_bloodsugar': data.scan_bloodsugar,
             }
         else:
-            return JsonResponse({'message': 'record_type이 1인 데이터를 찾을 수 없습니다.'}, status=404)
+            other_data = Data.objects.filter(code=code_number.device_num)
+            if other_data.exists():
+                return JsonResponse({'message': 'record_type이 1인 데이터를 찾을 수 없습니다.'}, status=404)
+            else:
+                return JsonResponse({'message': 'CSV file not found for the specified pet_id'}, status=404)
 
         return JsonResponse(response_data)
     except codeNumber.DoesNotExist:
         return JsonResponse({'message': 'codeNumber data not found for the specified pet_id'}, status=404)
-    except Data.DoesNotExist:
-        return JsonResponse({'message': 'Data not found for the specified pet_id'}, status=404)
     except:
         return JsonResponse({'message': '데이터를 불러오는 과정에서 오류가 발생하였습니다.'}, status=500)
 
