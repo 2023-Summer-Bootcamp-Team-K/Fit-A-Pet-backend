@@ -8,7 +8,7 @@ from django.utils import timezone
 from datetime import datetime
 from rest_framework.test import APIClient
 
-from .views import calculate_hba1c, get_one_day_data, get_interval_data, get_month_data
+from .views import calculate_hba1c, get_interval_data, get_month_data
 
 from codeNumber.models import codeNumber
 from pet.models import Pet
@@ -41,7 +41,7 @@ class CalculateHba1cTestCase(TestCase):
         self.data = Data.objects.create(
             device="FreeStyle LibreLink",
             code="000A0A00-0AAA-00A0-A00A-000000AA000A",
-            timestamp=datetime(2023, 7, 30, 12, 0, 0),
+            timestamp=datetime(2023, 7, 31, 12, 0, 0),
             record_type=0,
             bloodsugar=100,
             created_at=timezone.make_aware(datetime(2023, 7, 1, 0, 0, 0)),
