@@ -244,3 +244,71 @@ class GetOneDayDataTestCase(TestCase):
 
         self.assertEqual(response.data, expected_data_serialized)
 
+
+class GetIntervalDataTestCase(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+
+        self.user = User.objects.create_user(
+            username="test_user",
+            email="test@pet.com",
+            password="123"
+        )
+
+        self.pet = Pet.objects.create(
+            id=10,
+            name="Test Pet",
+            feed="닭고기 사료",
+            age=2,
+            sore_spot="관절",
+            weight=4,
+            started_date=timezone.make_aware(datetime(2023, 7, 1, 0, 0, 0)),
+            user=self.user
+        )
+
+        self.data = Data.objects.create(
+            device="FreeStyle LibreLink",
+            code="000A0A00-0AAA-00A0-A00A-000000AA000A",
+            timestamp=datetime(2023, 7, 30, 12, 0, 0),
+            record_type=0,
+            bloodsugar=100,
+            created_at=timezone.make_aware(datetime(2023, 7, 1, 0, 0, 0)),
+            updated_at=timezone.make_aware(datetime(2023, 7, 2, 0, 0, 0))
+        )
+
+        self.codenumber = codeNumber.objects.create(
+            pet_id=self.pet,
+            device_num="000A0A00-0AAA-00A0-A00A-000000AA000A"
+        )
+
+        self.factory = RequestFactory()
+
+    def test_get_interval_data_success(self):
+        # 시작 날짜와 종료 날짜를 설정
+        start_month = 7
+        start_day = 29
+        end_month = 7
+        end_day = 31
+
+        # 시작 날짜와 종료 날짜로 URL 생성
+        url = reverse('get-interval-data', kwargs={
+            'start_month': start_month,
+            'start_day': start_day,
+            'end_month': end_month,
+            'end_day': end_day,
+            'pet_id': self.pet.id
+        })
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+
+        expected_data_list = [
+            {
+                'timestamp': '2023-07-30T12:00:00+09:00',
+                'bloodsugar': 100
+            }
+        ]
+        expected_data_serialized = {'data_list': expected_data_list}
+
+        self.assertEqual(response.data, expected_data_serialized)
