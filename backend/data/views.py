@@ -1,5 +1,6 @@
 import datetime
 
+from django.core.cache import cache
 from django.utils.datetime_safe import date
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
@@ -13,6 +14,11 @@ from .serializers import ChartSerializer
 
 
 def calculate_hba1c(request, pet_id):
+    cache_key = f'get_data:{pet_id}'
+    cached_data = cache.get(cache_key)
+
+    if cached_data:
+        return Response(cached_data)
     try:
         code_number = codeNumber.objects.get(pet_id=pet_id)
     except codeNumber.DoesNotExist:
@@ -42,11 +48,17 @@ def calculate_hba1c(request, pet_id):
     response_data = {
         "hba1c": hba1c_rounded,
     }
-
+    cache.set(cache_key, response_data, timeout=86400)
     return JsonResponse(response_data)
 
 
 def get_most_recent_data(request, pet_id):
+    cache_key = f'get_data:{pet_id}'
+    cached_data = cache.get(cache_key)
+
+    if cached_data:
+        return Response(cached_data)
+
     try:
         code_number = codeNumber.objects.get(pet_id=pet_id)
 
@@ -60,7 +72,7 @@ def get_most_recent_data(request, pet_id):
             }
         else:
             return JsonResponse({'message': 'record_type이 1인 데이터를 찾을 수 없습니다.'}, status=404)
-
+        cache.set(cache_key, response_data, timeout=86400)
         return JsonResponse(response_data)
     except codeNumber.DoesNotExist:
         return JsonResponse({'message': 'codeNumber data not found for the specified pet_id'}, status=404)
@@ -72,6 +84,12 @@ def get_most_recent_data(request, pet_id):
 
 @api_view(['GET'])
 def get_one_day_data(request, month, day, pet_id):
+    cache_key = f'get_data:{month ,day, pet_id}'
+    cached_data = cache.get(cache_key)
+
+    if cached_data:
+        return Response(cached_data)
+
     data_list = []
     code_number = codeNumber.objects.get(pet_id=pet_id)
     queryset = Data.objects.filter(
@@ -84,11 +102,18 @@ def get_one_day_data(request, month, day, pet_id):
         data_list.append(serializer.data)
 
     response_data = {'data_list': data_list}
+    cache.set(cache_key, response_data, timeout=86400)
     return Response(response_data)
 
 
 @api_view(['GET'])
 def get_interval_data(request, start_month, start_day, end_month, end_day, pet_id):
+    cache_key = f'get_data:{start_month, start_day, end_month, end_day, pet_id}'
+    cached_data = cache.get(cache_key)
+
+    if cached_data:
+        return Response(cached_data)
+
     data_list = []
     code_number = codeNumber.objects.get(pet_id=pet_id)
 
@@ -105,11 +130,18 @@ def get_interval_data(request, start_month, start_day, end_month, end_day, pet_i
         data_list.append(serializer.data)
 
     response_data = {'data_list': data_list}
+    cache.set(cache_key, response_data, timeout=86400)
     return Response(response_data)
 
 
 @api_view(['GET'])
 def get_month_data(request, month, pet_id):
+    cache_key = f'get_data:{month, pet_id}'
+    cached_data = cache.get(cache_key)
+
+    if cached_data:
+        return Response(cached_data)
+
     data_list = []
     code_number = codeNumber.objects.get(pet_id=pet_id)
     queryset = Data.objects.filter(
@@ -123,4 +155,5 @@ def get_month_data(request, month, pet_id):
         data_list.append(serializer.data)
 
     response_data = {'data_list': data_list}
+    cache.set(cache_key, response_data, timeout=86400)
     return Response(response_data)
