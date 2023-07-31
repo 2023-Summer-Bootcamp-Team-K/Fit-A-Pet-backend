@@ -52,6 +52,26 @@ class CalculateHba1cTestCase(TestCase):
         response_data = json.loads(response.content)
         self.assertEqual(response_data['hba1c'], expected_hba1c_rounded)
 
+    def test_calculate_hba1c_empty_data(self):
+        # Call the view with a pet_id that has no associated Data objects
+        pet_id = self.pet.id
+        url = reverse('calculate-hba1c', args=[pet_id])
+        request = self.factory.get(url)
+        response = calculate_hba1c(request, pet_id)
+
+        # Check if the response status code is 200
+        self.assertEqual(response.status_code, 200)
+
+        # Parse the response content as JSON
+        response_data = json.loads(response.content)
+
+        # Ensure that the 'hba1c' field is present in the response_data
+        self.assertIn('hba1c', response_data)
+
+        # Compare the 'hba1c' value with the expected value
+        expected_hba1c = None
+        self.assertEqual(response_data['hba1c'], expected_hba1c)
+
     def test_calculate_hba1c_pet_not_found(self):
         # Test when the specified pet_id does not exist
         invalid_pet_id = self.pet.id + 1
@@ -66,3 +86,4 @@ class CalculateHba1cTestCase(TestCase):
         # Access JSON data through response.json attribute
         response_data = json.loads(response.content)
         self.assertEqual(response_data['message'], 'codeNumber data not found for the specified pet_id')
+
