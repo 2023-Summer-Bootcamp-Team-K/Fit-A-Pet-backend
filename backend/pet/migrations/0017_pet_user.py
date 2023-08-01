@@ -12,10 +12,4 @@ class Migration(migrations.Migration):
         ('pet', '0015_alter_pet_started_date'),
     ]
 
-    operations = [
-        # migrations.AddField(
-        #     model_name='pet',
-        #     name='user',
-        #     field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
-        # ),
-    ]
+    operations = []
