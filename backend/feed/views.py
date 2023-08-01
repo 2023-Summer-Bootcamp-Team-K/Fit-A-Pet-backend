@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Meat, Oil, Supplement, MixedFeed
@@ -7,6 +8,12 @@ from .models import Pet
 
 class FeedRecommendAPIView(APIView):
     def get(self, request, pk):
+        cache_key = f'get_data:{pk}'
+        cached_data = cache.get(cache_key)
+
+        if cached_data:
+            return Response(cached_data)
+
         try:
             pet = Pet.objects.get(pk=pk)
         except Pet.DoesNotExist:
@@ -62,5 +69,5 @@ class FeedRecommendAPIView(APIView):
                 "supplement": sup_serializer.data if selected_sup else None
             }
         }
-
+        cache.set(cache_key, data, timeout=86400)
         return Response(data)
