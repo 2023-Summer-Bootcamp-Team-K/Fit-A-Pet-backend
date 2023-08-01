@@ -1,5 +1,6 @@
 import boto3
 from django.contrib.auth.models import User
+from django.core.cache import cache
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, parsers
@@ -132,22 +133,37 @@ class PetDetailView(APIView):
     @swagger_auto_schema()
     @transaction.atomic
     def get(self, request, pet_id):
+        cache_key = f'get_data:{pet_id}'
+        cached_data = cache.get(cache_key)
+
+        if cached_data:
+            return Response(cached_data)
+
         try:
             pet = Pet.objects.get(id=int(pet_id))
         except Pet.DoesNotExist:
             return Response({"message":"반려동물 정보를 찾을 수 없습니다."}, status=status.HTTP_404_NOT_FOUND)
 
         serializer = PetSerializer(pet)
+        cache.set(cache_key, serializer.data, timeout=86400)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class PetListView(APIView):
     @swagger_auto_schema()
     @transaction.atomic
     def get(self, requset, user_id):
+        cache_key = f'get_data:{user_id}'
+        cached_data = cache.get(cache_key)
+
+        if cached_data:
+            return Response(cached_data)
+
         try:
             user = User.objects.get(id=user_id)
             pets = Pet.objects.filter(user=user)
             serializer = PetSerializer(pets, many=True)
+            cache.set(cache_key, serializer.data, timeout=86400)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except User.DoesNotExist:
             return Response({"message": "해당 사용자를 찾을 수 없습니다."})

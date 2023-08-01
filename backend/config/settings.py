@@ -135,7 +135,7 @@ PROMETHEUS_EXPORT_MIGRATIONS = False
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/1", # 1번 DB
+        "LOCATION": "redis://54.180.70.169:6379/1", # 1번 DB
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
