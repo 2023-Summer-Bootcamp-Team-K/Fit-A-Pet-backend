@@ -281,9 +281,9 @@ class GetIntervalDataTestCase(TestCase):
         self.data1 = Data.objects.create(
             device="FreeStyle LibreLink",
             code="000A0A00-0AAA-00A0-A00A-000000AA000A",
-            timestamp=datetime(2023, 7, 30, 12, 0, 0),
+            timestamp=datetime(2023, 7, 29, 12, 0, 0),
             record_type=0,
-            bloodsugar=100,
+            bloodsugar=95,
             created_at=timezone.make_aware(datetime(2023, 7, 1, 0, 0, 0)),
             updated_at=timezone.make_aware(datetime(2023, 7, 2, 0, 0, 0))
         )
@@ -291,7 +291,17 @@ class GetIntervalDataTestCase(TestCase):
         self.data2 = Data.objects.create(
             device="FreeStyle LibreLink",
             code="000A0A00-0AAA-00A0-A00A-000000AA000A",
-            timestamp=datetime(2023, 7, 31, 12, 0, 0),
+            timestamp=datetime(2023, 7, 30, 12, 0, 0),
+            record_type=0,
+            bloodsugar=100,
+            created_at=timezone.make_aware(datetime(2023, 7, 1, 0, 0, 0)),
+            updated_at=timezone.make_aware(datetime(2023, 7, 2, 0, 0, 0))
+        )
+
+        self.data3 = Data.objects.create(
+            device="FreeStyle LibreLink",
+            code="000A0A00-0AAA-00A0-A00A-000000AA000A",
+            timestamp=datetime(2023, 8, 1, 12, 0, 0),
             record_type=0,
             bloodsugar=105,
             created_at=timezone.make_aware(datetime(2023, 7, 1, 0, 0, 0)),
@@ -325,11 +335,11 @@ class GetIntervalDataTestCase(TestCase):
         expected_data_list = [
             {
                 'timestamp': make_aware(self.data1.timestamp).isoformat(),
-                'bloodsugar': 100
+                'bloodsugar': 95
             },
             {
                 'timestamp': make_aware(self.data2.timestamp).isoformat(),
-                'bloodsugar': 105
+                'bloodsugar': 100
             }
         ]
         response_data_list_sorted = sorted(response.data['data_list'], key=itemgetter('timestamp'))
