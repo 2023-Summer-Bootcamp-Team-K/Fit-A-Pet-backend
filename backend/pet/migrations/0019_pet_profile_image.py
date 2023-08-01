@@ -11,8 +11,8 @@ class Migration(migrations.Migration):
 
     operations = [
         # migrations.AddField(
-        #     model_name='pet',
-        #     name='profile_image',
-        #     field=models.ImageField(blank=True, null=True, upload_to='fitapet/'),
+        #    model_name='pet',
+        #    name='profile_image',
+        #    field=models.ImageField(blank=True, null=True, upload_to='fitapet/'),
         # ),
     ]
