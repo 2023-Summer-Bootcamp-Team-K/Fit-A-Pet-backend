@@ -9,10 +9,4 @@ class Migration(migrations.Migration):
         ('pet', '0017_pet_user'),
     ]
 
-    operations = [
-        # migrations.AddField(
-        #    model_name='pet',
-        #    name='profile_image',
-        #    field=models.ImageField(blank=True, null=True, upload_to='fitapet/'),
-        # ),
-    ]
+    operations = []

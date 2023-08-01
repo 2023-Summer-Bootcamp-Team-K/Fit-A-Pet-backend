@@ -26,16 +26,6 @@ class Migration(migrations.Migration):
             model_name='mixedfeed',
             name='supplement',
         ),
-        # migrations.AddField(
-        #    model_name='pet',
-        #    name='feed',
-        #    field=models.CharField(blank=True, max_length=32),
-        # ),
-        # migrations.AddField(
-        #    model_name='pet',
-        #    name='sore_spot',
-        #    field=models.CharField(blank=True, max_length=10),
-        # ),
         migrations.DeleteModel(
             name='Meat',
         ),
