@@ -14,11 +14,7 @@ from .serializers import ChartSerializer
 
 
 def calculate_hba1c(request, pet_id):
-    cache_key = f'get_data:{pet_id}'
-    cached_data = cache.get(cache_key)
 
-    if cached_data:
-        return Response(cached_data)
     try:
         code_number = codeNumber.objects.get(pet_id=pet_id)
     except codeNumber.DoesNotExist:
@@ -48,16 +44,10 @@ def calculate_hba1c(request, pet_id):
     response_data = {
         "hba1c": hba1c_rounded,
     }
-    cache.set(cache_key, response_data, timeout=86400)
     return JsonResponse(response_data)
 
 
 def get_most_recent_data(request, pet_id):
-    cache_key = f'get_data:{pet_id}'
-    cached_data = cache.get(cache_key)
-
-    if cached_data:
-        return Response(cached_data)
 
     try:
         code_number = codeNumber.objects.get(pet_id=pet_id)
@@ -137,11 +127,6 @@ def get_interval_data(request, start_month, start_day, end_month, end_day, pet_i
 
 @api_view(['GET'])
 def get_month_data(request, month, pet_id):
-    cache_key = f'get_data:{month, pet_id}'
-    cached_data = cache.get(cache_key)
-
-    if cached_data:
-        return Response(cached_data)
 
     data_list = []
     code_number = codeNumber.objects.get(pet_id=pet_id)
@@ -156,5 +141,4 @@ def get_month_data(request, month, pet_id):
         data_list.append(serializer.data)
 
     response_data = {'data_list': data_list}
-    cache.set(cache_key, response_data, timeout=86400)
     return Response(response_data)
