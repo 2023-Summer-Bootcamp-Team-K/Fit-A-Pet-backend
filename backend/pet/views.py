@@ -147,11 +147,17 @@ class PetListView(APIView):
     @swagger_auto_schema()
     @transaction.atomic
     def get(self, requset, user_id):
+        cache_key = f'get_data:{user_id}'
+        cached_data = cache.get(cache_key)
+
+        if cached_data:
+            return Response(cached_data)
 
         try:
             user = User.objects.get(id=user_id)
             pets = Pet.objects.filter(user=user)
             serializer = PetSerializer(pets, many=True)
+            cache.set(cache_key, serializer.data, timeout=86400)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except User.DoesNotExist:
             return Response({"message": "해당 사용자를 찾을 수 없습니다."})
