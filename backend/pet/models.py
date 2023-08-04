@@ -6,13 +6,13 @@ from django.contrib.auth.models import User
 # Create your models here.
 class Pet(models.Model):
     GENDER_CHOICES = (
-        ('unspayed female', 'Unspayed Female'),
-        ('spayed female', 'Spayed Female'),
-        ('unneutered male', 'Unneutered Male'),
-        ('neutered male', 'Neutered Male'),
+        ('수컷', '수컷'),
+        ('암컷', '암컷'),
+        ('중성화된 수컷', '중성화된 수컷'),
+        ('중성화된 암컷', '중성화된 암컷'),
     )
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
     name = models.CharField(max_length=10)
     age = models.IntegerField()
     species = models.CharField(max_length=20)

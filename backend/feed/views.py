@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Meat, Oil, Supplement, MixedFeed
@@ -7,12 +8,12 @@ from .models import Pet
 
 class FeedRecommendAPIView(APIView):
     def get(self, request, pk):
+
         try:
             pet = Pet.objects.get(pk=pk)
         except Pet.DoesNotExist:
             return Response(status=404)
 
-        # Selected Meat
         if pet.feed == '닭고기 사료':
             selected_meat = '소고기 사료'
         elif pet.feed == '소고기 사료':
@@ -24,7 +25,6 @@ class FeedRecommendAPIView(APIView):
         else:
             selected_meat = None
 
-        # Selected Oil
         if pet.age <= 1:
             selected_oil = '20ml 오일스틱'
         elif 1 < pet.age <= 7:
@@ -32,7 +32,6 @@ class FeedRecommendAPIView(APIView):
         else:
             selected_oil = '10ml 오일스틱'
 
-        # Selected Supplement
         if pet.sore_spot == '관절':
             selected_sup = '관절 보조식품'
         elif pet.sore_spot == '피부':
@@ -65,5 +64,4 @@ class FeedRecommendAPIView(APIView):
                 "supplement": sup_serializer.data if selected_sup else None
             }
         }
-
         return Response(data)

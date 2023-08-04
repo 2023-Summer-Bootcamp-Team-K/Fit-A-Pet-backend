@@ -1,6 +1,5 @@
 from django.db import models
 
-# Create your models here.
 class Data(models.Model):
     device = models.CharField(max_length=32)
     code = models.CharField(max_length=100)
