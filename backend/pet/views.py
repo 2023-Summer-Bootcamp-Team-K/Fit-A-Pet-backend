@@ -133,11 +133,6 @@ class PetDetailView(APIView):
     @swagger_auto_schema()
     @transaction.atomic
     def get(self, request, pet_id):
-        cache_key = f'get_data:{pet_id}'
-        cached_data = cache.get(cache_key)
-
-        if cached_data:
-            return Response(cached_data)
 
         try:
             pet = Pet.objects.get(id=int(pet_id))
@@ -145,7 +140,6 @@ class PetDetailView(APIView):
             return Response({"message":"반려동물 정보를 찾을 수 없습니다."}, status=status.HTTP_404_NOT_FOUND)
 
         serializer = PetSerializer(pet)
-        cache.set(cache_key, serializer.data, timeout=86400)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
