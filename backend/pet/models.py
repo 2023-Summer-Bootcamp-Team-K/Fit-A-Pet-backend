@@ -2,6 +2,8 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.contrib.auth.models import User
 
+from config import settings
+
 
 # Create your models here.
 class Pet(models.Model):
@@ -12,7 +14,7 @@ class Pet(models.Model):
         ('중성화된 암컷', '중성화된 암컷'),
     )
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     name = models.CharField(max_length=10)
     age = models.IntegerField()
     species = models.CharField(max_length=20)
