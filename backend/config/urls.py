@@ -29,4 +29,8 @@ urlpatterns = [
     path('api/pets/', include('pet.urls')),
     path('api/data/', include('data.urls')),
     path('api/suggestions/', include('suggestion.urls')),
+
+    path('accounts/', include('dj_rest_auth.urls')),
+    path('accounts/', include('allauth.urls')),
+    path('accounts/', include('accounts.urls')),
 ]
