@@ -10,6 +10,7 @@ from django.shortcuts import redirect
 from drf_yasg.utils import swagger_auto_schema
 from requests import JSONDecodeError
 from rest_framework import status
+from rest_framework.decorators import api_view
 
 from accounts.models import User
 
@@ -95,8 +96,9 @@ def kakao_callback(request):
         if accept_status != 200:
             return JsonResponse({'err_msg': 'failed to signin'}, status=accept_status)
         accept_json = accept.json()
+        print(accept_json)
         accept_json.pop('user', None)
-        return JsonResponse(accept_json)
+        return JsonResponse(data)
     except User.DoesNotExist:
         # 기존에 가입된 유저가 없으면 새로 가입
         data = {'access_token': access_token, 'code': code}
@@ -108,7 +110,31 @@ def kakao_callback(request):
         # user의 pk, email, first name, last name과 Access Token, Refresh token 가져옴
         accept_json = accept.json()
         accept_json.pop('user', None)
-        return JsonResponse(accept_json)
+        return JsonResponse(data)
+
+
+@api_view(['POST'])
+def kakao_logout(request):
+    # 사용자의 액세스 토큰을 요청 헤더 또는 바디에서 가져옵니다.
+    # 이 예시에서는 헤더에서 Bearer 토큰을 가져옵니다.
+    access_token = request.META.get('HTTP_AUTHORIZATION', '').split('Bearer ')[-1]
+
+    if not access_token:
+        return JsonResponse({'error': '액세스 토큰이 제공되지 않았습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    logout_headers = {
+        'Authorization': f'Bearer {access_token}'
+    }
+    print(access_token)
+    logout_response = requests.post('https://kapi.kakao.com/v1/user/logout', headers=logout_headers)
+
+    # 로그아웃 요청에 대한 응답이 성공적인지 확인합니다.
+    if logout_response.status_code == 200:
+        # 성공적으로 로그아웃되었을 경우의 처리를 작성합니다.
+        return JsonResponse(logout_response.json(), status=status.HTTP_200_OK)
+    else:
+        # 실패했을 경우의 처리를 작성합니다.
+        return JsonResponse(logout_response.json(), status=logout_response.status_code)
 
 
 class KakaoLogin(SocialLoginView):
