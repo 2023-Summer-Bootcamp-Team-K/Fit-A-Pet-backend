@@ -143,25 +143,25 @@ def kakao_callback(request):
 
 @api_view(['POST'])
 def kakao_logout(request):
-    # 사용자의 액세스 토큰을 요청 헤더 또는 바디에서 가져옵니다.
-    # 이 예시에서는 헤더에서 Bearer 토큰을 가져옵니다.
     access_token = request.META.get('HTTP_AUTHORIZATION', '').split('Bearer ')[-1]
 
     if not access_token:
         return JsonResponse({'error': '액세스 토큰이 제공되지 않았습니다.'}, status=status.HTTP_400_BAD_REQUEST)
 
-    logout_headers = {
-        'Authorization': f'Bearer {access_token}'
-    }
-    print(access_token)
+    # Query the SocialToken model
+    try:
+        social_token = SocialToken.objects.get(token=access_token)
+    except SocialToken.DoesNotExist:
+        return JsonResponse({'error': '토큰이 유효하지 않습니다.'}, status=status.HTTP_404_NOT_FOUND)
+
+    logout_headers = {'Authorization': f'Bearer {access_token}'}
     logout_response = requests.post('https://kapi.kakao.com/v1/user/logout', headers=logout_headers)
 
-    # 로그아웃 요청에 대한 응답이 성공적인지 확인합니다.
     if logout_response.status_code == 200:
-        # 성공적으로 로그아웃되었을 경우의 처리를 작성합니다.
+        # Delete the token from the database
+        social_token.delete()
         return JsonResponse(logout_response.json(), status=status.HTTP_200_OK)
     else:
-        # 실패했을 경우의 처리를 작성합니다.
         return JsonResponse(logout_response.json(), status=logout_response.status_code)
 
 
