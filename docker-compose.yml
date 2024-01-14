@@ -1,15 +1,14 @@
-version: '3'
+ version: '3'
 services:
   backend:
     container_name: backend
     build:
       context: ./backend
       dockerfile: Dockerfile
-    command:
-      - gunicorn
-      - "--bind"
-      - "0:8000"
-      - "config.wsgi:application"
+    command: >
+      sh -c "python manage.py makemigrations &&
+            python manage.py migrate &&
+            gunicorn --bind 0:8000 config.wsgi:application"
     ports:
       - 8000:8000
     volumes:
@@ -18,7 +17,8 @@ services:
     networks:
       - app-tier
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     expose:
       - 8000
 
@@ -34,6 +34,11 @@ services:
       - db-data:/var/lib/mysql
     command: --default-authentication-plugin=mysql_native_password
     restart: always
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      retries: 5
+      timeout: 5s
     networks:
       - app-tier
 
