@@ -1,4 +1,4 @@
-from .models import User
+from .models import AccountUser
 from django.contrib import admin
 from rest_framework_simplejwt.token_blacklist.admin import OutstandingTokenAdmin
 from rest_framework_simplejwt.token_blacklist.models import OutstandingToken
@@ -11,4 +11,4 @@ class CustomOutstandingTokenAdmin(OutstandingTokenAdmin):
 
 admin.site.unregister(OutstandingToken)
 # admin.site.register(OutstandingToken, CustomOutstandingTokenAdmin)
-admin.site.register(User)
+admin.site.register(AccountUser)

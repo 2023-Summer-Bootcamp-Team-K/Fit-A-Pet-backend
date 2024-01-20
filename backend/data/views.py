@@ -1,7 +1,6 @@
 import datetime
 
 from django.core.cache import cache
-from django.utils.datetime_safe import date
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.http import JsonResponse
@@ -20,7 +19,7 @@ def calculate_hba1c(request, pet_id):
     except codeNumber.DoesNotExist:
         return JsonResponse({'message': 'codeNumber data not found for the specified pet_id'}, status=404)
 
-    end_date = date.today()
+    end_date = datetime.date.today()
     start_date = end_date - timedelta(days=1)
 
     queryset = Data.objects.filter(
