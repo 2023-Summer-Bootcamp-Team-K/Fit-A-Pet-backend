@@ -8,12 +8,13 @@ services:
     command: >
       sh -c "python manage.py makemigrations &&
             python manage.py migrate &&
-            gunicorn --bind 0:8000 config.wsgi:application"
+            python init_db.py &&
+            gunicorn --bind 0:8000 config.wsgi:application --timeout 120 --workers 4"
     ports:
       - 8000:8000
     volumes:
       - ./backend/:/backend/
-      - ./backend/static/:/backend/static/
+      - static_volume:/backend/static/
     networks:
       - app-tier
     depends_on:
@@ -253,3 +254,4 @@ networks:
 volumes:
 #  elasticsearch:
   db-data: {}
+  static_volume: {}

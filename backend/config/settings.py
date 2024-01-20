@@ -12,7 +12,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '0.0.0.0', '0.0.0.0:8000', "*", "54.180.70.169", 'backend']
+ALLOWED_HOSTS = ['*']
 
 AUTH_USER_MODEL = 'accounts.AccountUser'
 
@@ -62,7 +62,7 @@ REST_FRAMEWORK = {
     ),
 }
 
-SITE_ID = 3
+SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -164,7 +164,7 @@ AWS_S3_OBJECT_PARAMETERS = {
 }
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'backend', 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 FILE_UPLOAD_HANDLERS = [
